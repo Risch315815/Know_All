@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>全知專案 · Know All</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">全知專案</span>
+      </div>
+      <nav class="site-nav">
+        <a href="index.html" class="nav-link active">地圖</a>
+        <a href="#about" class="nav-link">關於</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <h1 class="hero-title">知識地圖</h1>
+        <p class="hero-subtitle">
+          學習的第一步是建立體系，了解脈絡；<br />
+          細節在應用的過程中一步步填充。
+        </p>
+      </div>
+    </section>
+
+    <section class="domains-section">
+      <div class="section-header">
+        <h2 class="section-title">探索中的領域</h2>
+        <p class="section-desc">每個卡片代表一個知識領域，點擊進入該領域的體系骨架。</p>
+      </div>
+
+      <div class="domains-grid" id="domainsGrid">
+        <!-- Domain cards are rendered here -->
+      </div>
+
+      <div class="add-domain-wrapper">
+        <button class="add-domain-btn" id="addDomainBtn" title="新增知識領域">
+          <span class="add-icon">＋</span>
+          <span>新增領域</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="philosophy-section" id="about">
+      <div class="philosophy-inner">
+        <h2 class="philosophy-title">全知專案的信念</h2>
+        <div class="belief-grid">
+          <div class="belief-card">
+            <div class="belief-icon">⬡</div>
+            <h3>體系優先</h3>
+            <p>先建立整個領域的骨架，知道每個概念在哪裡、為什麼存在，再深入細節。</p>
+          </div>
+          <div class="belief-card">
+            <div class="belief-icon">⬡</div>
+            <h3>應用填充</h3>
+            <p>細節不是靠背誦記住的，而是在解決真實問題的過程中自然沉澱。</p>
+          </div>
+          <div class="belief-card">
+            <div class="belief-icon">⬡</div>
+            <h3>持續演化</h3>
+            <p>知識體系不是靜態的完成品，而是隨著理解加深而不斷修正、擴展的活地圖。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>全知專案 · <a href="https://github.com/Risch315815/Know_All" target="_blank">GitHub</a></p>
+  </footer>
+
+  <!-- Add Domain Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>新增知識領域</h3>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <label for="domainName">領域名稱</label>
+        <input type="text" id="domainName" placeholder="例如：機器學習" />
+
+        <label for="domainDesc">一句話描述</label>
+        <input type="text" id="domainDesc" placeholder="例如：讓機器從資料中學習規律" />
+
+        <label for="domainIcon">圖示（單一 emoji 或符號）</label>
+        <input type="text" id="domainIcon" placeholder="例如：🤖" maxlength="4" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" id="modalCancel">取消</button>
+        <button class="btn-confirm" id="modalConfirm">建立</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

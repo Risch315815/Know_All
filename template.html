@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- EDIT: 頁面標題 -->
+  <title>【領域名稱】· 全知專案</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+  <!--
+    ★ 使用說明 ★
+    1. 複製這個檔案到 domains/[領域slug]/ 資料夾，並重命名為 index.html
+    2. 搜尋「EDIT:」並依指示填入內容
+    3. <link> 與 <script> 的路徑：
+       - 如果是 domains/xxx/index.html  → 使用 ../../css/ 和 ../../js/
+       - 如果是根目錄的頁面              → 使用 css/ 和 js/
+  -->
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <a href="../../index.html" style="display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;">
+          <span class="logo-icon">◈</span>
+          <span class="logo-text">全知專案</span>
+        </a>
+      </div>
+      <nav class="site-nav">
+        <a href="../../index.html" class="nav-link">地圖</a>
+        <!-- EDIT: 將「領域名稱」替換為此領域的名稱 -->
+        <a href="index.html" class="nav-link active">領域名稱</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <div class="domain-page-header">
+      <!-- EDIT: 領域圖示 (emoji) -->
+      <span class="domain-page-icon">◈</span>
+      <!-- EDIT: 領域名稱 -->
+      <h1 class="domain-page-title">領域名稱</h1>
+      <!-- EDIT: 一句話描述這個領域 -->
+      <p class="domain-page-desc">這個領域的一句話描述</p>
+    </div>
+
+    <div class="domain-content">
+
+      <!-- Sidebar：目錄導覽 -->
+      <aside class="domain-sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">本頁章節</div>
+          <!-- EDIT: 依照下方 map-section 的章節新增連結 -->
+          <a href="#overview" class="sidebar-link">總覽</a>
+          <a href="#map" class="sidebar-link">體系骨架</a>
+          <a href="#notes" class="sidebar-link">學習筆記</a>
+          <a href="#applications" class="sidebar-link">實際應用</a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">延伸閱讀</div>
+          <!-- EDIT: 加入相關資源連結 -->
+          <a href="#" class="sidebar-link">參考資源 1</a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="domain-main-content">
+
+        <!-- ① 總覽 -->
+        <section class="map-section" id="overview">
+          <h2 class="map-title">總覽</h2>
+          <!-- EDIT: 用 2-3 段話說明這個領域是什麼、為什麼重要 -->
+          <p style="color:var(--text-muted);font-size:14px;line-height:1.8;">
+            在這裡寫下對這個領域的整體理解：它解決什麼問題？它的核心思想是什麼？
+            學它的目的是什麼？
+          </p>
+        </section>
+
+        <!-- ② 體系骨架 -->
+        <section class="map-section" id="map">
+          <h2 class="map-title">體系骨架</h2>
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px;">
+            ◆ 已有筆記　— 尚待填充
+          </p>
+          <!-- EDIT: 用樹狀清單列出這個領域的主要概念架構 -->
+          <ul class="map-tree">
+            <li>第一個大主題
+              <ul class="subtree">
+                <li>子概念 1</li>
+                <li>子概念 2</li>
+              </ul>
+            </li>
+            <li>第二個大主題
+              <ul class="subtree">
+                <li>子概念 1</li>
+                <li>子概念 2</li>
+              </ul>
+            </li>
+            <li class="filled"><a href="#">第三個大主題（已有筆記）</a></li>
+          </ul>
+        </section>
+
+        <!-- ③ 學習筆記 -->
+        <section class="map-section" id="notes">
+          <h2 class="map-title">學習筆記</h2>
+          <!-- EDIT: 把這裡替換成你的實際筆記內容 -->
+          <p style="color:var(--text-dim);font-size:14px;">尚未新增筆記。</p>
+        </section>
+
+        <!-- ④ 實際應用 -->
+        <section class="map-section" id="applications">
+          <h2 class="map-title">實際應用</h2>
+          <!-- EDIT: 記錄你用這個領域知識解決的真實問題 -->
+          <p style="color:var(--text-dim);font-size:14px;">尚未新增應用案例。</p>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>全知專案 · <a href="https://github.com/Risch315815/Know_All" target="_blank">GitHub</a></p>
+  </footer>
+
+</body>
+</html>
