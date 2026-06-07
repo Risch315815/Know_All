@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>微積分 · 全知專案</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]})"></script>
+  <style>
+    /* ── Map tree ─────────────────────────────────────── */
+    .map-tree { list-style: none; padding: 0; margin: 0; }
+    .map-tree li { position: relative; }
+
+    /* Top-level branch */
+    .branch { margin-bottom: 8px; }
+    .branch-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition);
+    }
+    .branch-header:hover { border-color: var(--accent-dim); }
+    .branch-header.open { border-color: var(--accent-dim); }
+    .branch-icon { font-size: 14px; color: var(--accent); flex-shrink: 0; }
+    .branch-title { font-size: 15px; font-weight: 600; flex: 1; }
+    .branch-count { font-size: 11px; color: var(--text-dim); }
+    .branch-chevron { color: var(--text-dim); font-size: 12px; transition: transform 0.2s; }
+    .branch-header.open .branch-chevron { transform: rotate(90deg); }
+
+    .branch-body {
+      display: none;
+      padding: 8px 0 4px 24px;
+      border-left: 1px solid var(--border);
+      margin-left: 20px;
+      margin-top: 4px;
+    }
+    .branch-body.open { display: block; }
+
+    /* Leaf nodes */
+    .leaf {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 2px;
+      transition: var(--transition);
+      position: relative;
+    }
+    .leaf:hover { background: var(--bg-card); }
+    .leaf-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      flex-shrink: 0; margin-top: 6px;
+    }
+    .leaf.empty .leaf-dot { background: var(--text-dim); }
+    .leaf.filled .leaf-dot { background: var(--accent); }
+    .leaf.key .leaf-dot { background: #f59e0b; box-shadow: 0 0 6px #f59e0b66; }
+
+    .leaf-name { font-size: 14px; color: var(--text-muted); flex: 1; }
+    .leaf.filled .leaf-name { color: var(--text); }
+    .leaf.key .leaf-name { color: #f59e0b; font-weight: 500; }
+
+    .leaf-link { font-size: 11px; color: var(--accent); margin-left: 6px;
+      opacity: 0; transition: var(--transition); text-decoration: none; }
+    .leaf:hover .leaf-link { opacity: 1; }
+
+    .leaf-badge {
+      font-size: 10px; padding: 2px 7px; border-radius: 10px;
+      border: 1px solid; flex-shrink: 0;
+    }
+    .leaf-badge.note { border-color: var(--accent-dim); color: var(--accent); }
+    .leaf-badge.key-badge { border-color: #f59e0b66; color: #f59e0b; }
+
+    /* Sub-branch */
+    .sub-branch { margin: 4px 0; }
+    .sub-branch-title {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--text-dim);
+      padding: 6px 12px 4px; margin-top: 6px;
+    }
+
+    /* Legend */
+    .legend { display: flex; gap: 20px; flex-wrap: wrap;
+      padding: 12px 16px; background: var(--bg-surface);
+      border-radius: var(--radius-sm); border: 1px solid var(--border);
+      margin-bottom: 24px; }
+    .legend-item { display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--text-muted); }
+    .legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+    /* Context card */
+    .context-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid #f59e0b;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 14px 18px;
+      margin: 6px 0 2px 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .context-card strong { color: var(--text); }
+    .context-card a { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <a href="../../index.html" style="display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;">
+          <span class="logo-icon">◈</span>
+          <span class="logo-text">全知專案</span>
+        </a>
+      </div>
+      <nav class="site-nav">
+        <a href="../../index.html" class="nav-link">地圖</a>
+        <a href="index.html" class="nav-link active">微積分</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="domain-page-header">
+      <span class="domain-page-icon">∫</span>
+      <h1 class="domain-page-title">微積分</h1>
+      <p class="domain-page-desc">研究連續變化的數學語言——描述運動、面積、最優化，以及幾乎所有自然現象的底層工具。</p>
+    </div>
+
+    <div class="domain-content">
+
+      <!-- Sidebar -->
+      <aside class="domain-sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">章節導覽</div>
+          <a href="#limits" class="sidebar-link">① 極限與連續</a>
+          <a href="#diff" class="sidebar-link">② 微分學</a>
+          <a href="#integral" class="sidebar-link">③ 積分學</a>
+          <a href="#ftc" class="sidebar-link">④ 微積分基本定理</a>
+          <a href="#series" class="sidebar-link">⑤ 數列與級數</a>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">圖例</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--text-muted);">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:7px;height:7px;border-radius:50%;background:#f59e0b;box-shadow:0 0 6px #f59e0b66;flex-shrink:0;"></div>
+              已填充（有筆記）
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;"></div>
+              認識中（骨架完整）
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:7px;height:7px;border-radius:50%;background:var(--text-dim);flex-shrink:0;"></div>
+              尚待填充
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-title">關聯問題</div>
+          <a href="../../問題集/001-半圓等分.html" class="sidebar-link" style="color:var(--accent);">
+            #001 半圓等分問題
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main map -->
+      <div class="domain-main-content">
+
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.8;margin-bottom:24px;">
+          這是微積分的<strong style="color:var(--text)">知識骨架</strong>，
+          優先標記出各主題之間的脈絡關係。
+          亮色節點（<span style="color:#f59e0b">●</span>）表示已有實際應用的筆記；
+          空白節點（<span style="color:var(--text-dim)">●</span>）是等待填充的位置。
+        </p>
+
+        <ul class="map-tree">
+
+          <!-- ① 極限與連續 -->
+          <li class="branch" id="limits">
+            <div class="branch-header" onclick="toggleBranch(this)">
+              <span class="branch-icon">①</span>
+              <span class="branch-title">極限與連續</span>
+              <span class="branch-count">一切的基礎</span>
+              <span class="branch-chevron">›</span>
+            </div>
+            <div class="branch-body">
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">極限的直觀概念與 ε-δ 定義</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">極限的運算法則</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">夾擠定理（Squeeze Theorem）</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">連續函數的定義與性質</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">無窮極限與漸近線</span>
+              </div>
+            </div>
+          </li>
+
+          <!-- ② 微分學 -->
+          <li class="branch" id="diff">
+            <div class="branch-header" onclick="toggleBranch(this)">
+              <span class="branch-icon">②</span>
+              <span class="branch-title">微分學</span>
+              <span class="branch-count">描述瞬時變化率</span>
+              <span class="branch-chevron">›</span>
+            </div>
+            <div class="branch-body">
+              <div class="sub-branch-title">基本概念</div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">導函數的定義（極限定義）</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">微分的幾何意義：切線斜率</span>
+              </div>
+
+              <div class="sub-branch-title">微分規則</div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">冪次法則、指數、對數、三角函數</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">積法則 \((fg)' = f'g + fg'\)</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">商法則 \(\left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}\)</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">鏈鎖律 \(\frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}\)　<em style="font-size:12px;color:var(--text-dim)">三角代換的理論基礎</em></span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">隱函數微分</span>
+              </div>
+
+              <div class="sub-branch-title">應用</div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">極值定理、一階二階判別法</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">L'Hôpital 法則</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">相關變率問題</span>
+              </div>
+            </div>
+          </li>
+
+          <!-- ③ 積分學 -->
+          <li class="branch" id="integral">
+            <div class="branch-header open" onclick="toggleBranch(this)">
+              <span class="branch-icon">③</span>
+              <span class="branch-title">積分學</span>
+              <span class="branch-count">描述累積量</span>
+              <span class="branch-chevron">›</span>
+            </div>
+            <div class="branch-body open">
+              <div class="sub-branch-title">概念基礎</div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">黎曼和與定積分的定義</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">不定積分與反導函數</span>
+              </div>
+
+              <div class="sub-branch-title">積分技巧</div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">換元法（u-substitution）</span>
+              </div>
+
+              <!-- 三角代換 — KEY NODE -->
+              <div class="leaf key">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">
+                  三角代換（Trigonometric Substitution）
+                  <a href="#trig-sub-note" class="leaf-link">詳細筆記 ↓</a>
+                </span>
+                <span class="leaf-badge key-badge">已填充</span>
+              </div>
+
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">分部積分 \(\int u\,dv = uv - \int v\,du\)</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">部分分式分解</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">三角函數的積分（降冪公式）</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">廣義積分（Improper Integrals）</span>
+              </div>
+
+              <div class="sub-branch-title">應用</div>
+              <div class="leaf filled">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">
+                  面積計算
+                  <a href="../../問題集/001-半圓等分.html" class="leaf-link">見 #001 ↗</a>
+                </span>
+                <span class="leaf-badge note">有應用</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">旋轉體體積（圓盤法、殼層法）</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">弧長與曲面積</span>
+              </div>
+            </div>
+          </li>
+
+          <!-- ④ 微積分基本定理 -->
+          <li class="branch" id="ftc">
+            <div class="branch-header" onclick="toggleBranch(this)">
+              <span class="branch-icon">④</span>
+              <span class="branch-title">微積分基本定理</span>
+              <span class="branch-count">連接微分與積分</span>
+              <span class="branch-chevron">›</span>
+            </div>
+            <div class="branch-body">
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">第一基本定理：\(\frac{d}{dx}\int_a^x f(t)\,dt = f(x)\)</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">第二基本定理：\(\int_a^b f(x)\,dx = F(b) - F(a)\)</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">為什麼微分與積分互為逆運算</span>
+              </div>
+            </div>
+          </li>
+
+          <!-- ⑤ 數列與級數 -->
+          <li class="branch" id="series">
+            <div class="branch-header" onclick="toggleBranch(this)">
+              <span class="branch-icon">⑤</span>
+              <span class="branch-title">數列與級數</span>
+              <span class="branch-count">無窮的加法</span>
+              <span class="branch-chevron">›</span>
+            </div>
+            <div class="branch-body">
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">數列的收斂與發散</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">收斂判別法（比值法、根式法、積分判別法）</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">冪級數與收斂半徑</span>
+              </div>
+              <div class="leaf empty">
+                <div class="leaf-dot"></div>
+                <span class="leaf-name">Taylor / Maclaurin 展開式</span>
+              </div>
+            </div>
+          </li>
+
+        </ul>
+
+        <!-- ── 三角代換詳細筆記 ── -->
+        <div id="trig-sub-note" style="margin-top: 48px;">
+          <div class="map-section">
+            <h2 class="map-title" style="color:#f59e0b;">
+              三角代換（Trigonometric Substitution）
+              <span style="font-size:13px;font-weight:400;color:var(--text-dim);margin-left:12px;">積分技巧</span>
+            </h2>
+
+            <p style="font-size:14px;color:var(--text-muted);line-height:1.8;margin-bottom:20px;">
+              <strong style="color:var(--text)">核心思路：</strong>
+              當被積分式含有 \(\sqrt{a^2 - x^2}\)、\(\sqrt{a^2 + x^2}\)、\(\sqrt{x^2 - a^2}\) 的形式時，
+              用三角函數代換 \(x\)，把根號消去，轉化成三角函數的積分。
+            </p>
+
+            <!-- 三種情況 -->
+            <div style="display:grid;gap:16px;margin-bottom:24px;">
+
+              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;">
+                <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;">情況 ①</div>
+                <div style="font-size:15px;font-weight:600;margin-bottom:10px;">含 \(\sqrt{a^2 - x^2}\)</div>
+                <div style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">
+                  令 \(x = a\sin\theta\)，\(\theta \in [-\frac{\pi}{2}, \frac{\pi}{2}]\)
+                </div>
+                <div style="font-size:13px;color:var(--text-dim);line-height:1.8;">
+                  則 \(\sqrt{a^2-x^2} = a\cos\theta\)，\(dx = a\cos\theta\,d\theta\)<br/>
+                  根號消去，得到 \(\cos\theta\) 的積分
+                </div>
+                <div style="margin-top:12px;padding:10px 14px;background:var(--bg-card);border-radius:6px;font-size:13px;color:var(--text-muted);">
+                  <strong style="color:#f59e0b;">應用：</strong>
+                  \(\displaystyle\int\sqrt{R^2-x^2}\,dx\)（半圓面積）→
+                  <a href="../../問題集/001-半圓等分.html" style="color:var(--accent);">#001 半圓等分問題</a>
+                </div>
+              </div>
+
+              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;">
+                <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;">情況 ②</div>
+                <div style="font-size:15px;font-weight:600;margin-bottom:10px;">含 \(\sqrt{a^2 + x^2}\)</div>
+                <div style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">
+                  令 \(x = a\tan\theta\)，\(\theta \in (-\frac{\pi}{2}, \frac{\pi}{2})\)
+                </div>
+                <div style="font-size:13px;color:var(--text-dim);line-height:1.8;">
+                  則 \(\sqrt{a^2+x^2} = a\sec\theta\)，\(dx = a\sec^2\theta\,d\theta\)<br/>
+                  利用恆等式 \(1 + \tan^2\theta = \sec^2\theta\)
+                </div>
+              </div>
+
+              <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;">
+                <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;">情況 ③</div>
+                <div style="font-size:15px;font-weight:600;margin-bottom:10px;">含 \(\sqrt{x^2 - a^2}\)</div>
+                <div style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">
+                  令 \(x = a\sec\theta\)，\(\theta \in [0, \frac{\pi}{2})\cup(\frac{\pi}{2}, \pi]\)
+                </div>
+                <div style="font-size:13px;color:var(--text-dim);line-height:1.8;">
+                  則 \(\sqrt{x^2-a^2} = a\tan\theta\)，\(dx = a\sec\theta\tan\theta\,d\theta\)<br/>
+                  利用恆等式 \(\sec^2\theta - 1 = \tan^2\theta\)
+                </div>
+              </div>
+
+            </div>
+
+            <!-- 推導示範 -->
+            <div style="margin-top:8px;">
+              <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text);">推導示範：\(\displaystyle\int\sqrt{R^2 - x^2}\,dx\)</div>
+              <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid #f59e0b;border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:18px 22px;font-size:13px;color:var(--text-muted);line-height:2.2;">
+                令 \(x = R\sin\theta\)，則 \(dx = R\cos\theta\,d\theta\)，\(\sqrt{R^2-x^2} = R\cos\theta\)<br/>
+                $$\int R\cos\theta \cdot R\cos\theta\,d\theta = R^2\int\cos^2\theta\,d\theta$$
+                利用半角公式 \(\cos^2\theta = \dfrac{1+\cos 2\theta}{2}\)：
+                $$= R^2\int\frac{1+\cos 2\theta}{2}d\theta = R^2\left(\frac{\theta}{2} + \frac{\sin 2\theta}{4}\right) + C$$
+                用 \(\sin 2\theta = 2\sin\theta\cos\theta\) 與 \(\theta = \arcsin\dfrac{x}{R}\) 換回：
+                $$= \frac{x\sqrt{R^2-x^2}}{2} + \frac{R^2}{2}\arcsin\frac{x}{R} + C$$
+              </div>
+            </div>
+
+            <!-- 記憶錨點 -->
+            <div style="margin-top:20px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 20px;">
+              <div style="font-size:12px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">不需要背公式——只需記住這個對應關係</div>
+              <div style="font-size:14px;color:var(--text-muted);line-height:2;">
+                圓的方程 \(x^2 + y^2 = R^2\) 中令 \(x = R\sin\theta\) 就得 \(y = R\cos\theta\)。<br/>
+                <strong style="color:var(--text)">三角代換的本質就是把代數根號轉換成圓的幾何。</strong><br/>
+                記住這個幾何圖像，三種情況自然推導得出。
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>全知專案 · <a href="https://github.com/Risch315815/Know_All" target="_blank">GitHub</a></p>
+  </footer>
+
+  <script>
+    function toggleBranch(header) {
+      header.classList.toggle('open');
+      header.nextElementSibling.classList.toggle('open');
+    }
+    // Open all branches initially except those without open class
+    document.querySelectorAll('.branch-header.open').forEach(h => {
+      h.nextElementSibling.classList.add('open');
+    });
+  </script>
+
+</body>
+</html>
