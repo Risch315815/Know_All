@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>#001 半圓等分問題 · 全知專案</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <!-- KaTeX for math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left:'$$', right:'$$', display:true},
+        {left:'\\(', right:'\\)', display:false}
+      ]
+    })"></script>
+  <style>
+    .problem-page { max-width: 820px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* Breadcrumb */
+    .breadcrumb { display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--text-dim); padding: 20px 0 0; }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--accent); text-decoration: none; }
+    .breadcrumb-sep { color: var(--text-dim); }
+
+    /* Problem header */
+    .problem-header { padding: 36px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+    .problem-id { font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .problem-title { font-size: 30px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+    .problem-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag { padding: 3px 10px; border-radius: 20px; font-size: 12px;
+      background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); }
+
+    /* Section */
+    .section { margin-bottom: 48px; }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .section h2 { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+    .prose { font-size: 15px; line-height: 1.85; color: var(--text-muted); }
+    .prose p { margin-bottom: 14px; }
+    .prose strong { color: var(--text); }
+
+    /* Math blocks */
+    .math-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 20px 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .math-block .katex-display { margin: 0; }
+
+    /* Steps */
+    .step { display: flex; gap: 16px; margin-bottom: 32px; }
+    .step-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+      background: var(--accent-dim); color: var(--accent); font-size: 13px;
+      font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+
+    /* SVG diagram */
+    .diagram-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 16px;
+      margin: 24px 0;
+      text-align: center;
+    }
+    #semicircle-svg { width: 100%; max-width: 580px; height: auto; }
+
+    /* Result table */
+    .result-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .result-table th {
+      padding: 10px 16px; text-align: left; font-size: 12px;
+      font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-dim); border-bottom: 1px solid var(--border);
+    }
+    .result-table td {
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+      font-variant-numeric: tabular-nums;
+    }
+    .result-table tr:last-child td { border-bottom: none; }
+    .result-table .highlight { color: var(--accent); font-weight: 600; }
+    .result-table .sym { color: var(--text-dim); font-size: 12px; }
+
+    /* Insight box */
+    .insight {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 16px;
+    }
+    .insight-title { font-size: 13px; font-weight: 600; color: var(--text-muted);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .insight p { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin: 0; }
+
+    /* Newton iteration display */
+    .newton-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .newton-table th, .newton-table td {
+      padding: 8px 12px; border: 1px solid var(--border); text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .newton-table th { background: var(--bg-surface); color: var(--text-muted); font-weight: 600; }
+    .newton-table td:first-child { text-align: center; }
+    .newton-table tr.converged td { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <a href="../index.html" style="display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;">
+          <span class="logo-icon">◈</span>
+          <span class="logo-text">全知專案</span>
+        </a>
+      </div>
+      <nav class="site-nav">
+        <a href="../index.html" class="nav-link">地圖</a>
+        <a href="index.html" class="nav-link active">問題集</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="problem-page">
+
+    <div class="breadcrumb">
+      <a href="../index.html">全知專案</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="index.html">問題集</a>
+      <span class="breadcrumb-sep">›</span>
+      <span>#001</span>
+    </div>
+
+    <div class="problem-header">
+      <div class="problem-id"># 001</div>
+      <h1 class="problem-title">半圓等分問題<br />
+        <span style="font-size:18px;font-weight:400;color:var(--text-muted)">
+          用5條垂直切線將半圓分割成6個等面積區域
+        </span>
+      </h1>
+      <div class="problem-tags">
+        <span class="tag">微積分</span>
+        <span class="tag">定積分</span>
+        <span class="tag">Newton 法</span>
+        <span class="tag">數值方法</span>
+        <span class="tag">幾何</span>
+      </div>
+    </div>
+
+    <!-- ① 問題描述 -->
+    <div class="section">
+      <div class="section-label">問題描述</div>
+      <div class="prose">
+        <p>
+          有一個半圓，底邊（直徑）水平放置。現在想用 <strong>5 條垂直於底邊的直線</strong>，
+          將半圓分割成 <strong>6 個面積相等的部分</strong>。
+          請問這 5 條直線應該切在哪些位置？
+        </p>
+      </div>
+
+      <div class="diagram-container">
+        <svg id="semicircle-svg" viewBox="0 0 580 240" xmlns="http://www.w3.org/2000/svg">
+          <!-- Drawn by JS after computation -->
+        </svg>
+        <p style="font-size:12px;color:var(--text-dim);margin-top:12px;">
+          圖：6 個等面積區域（由 JavaScript 精確計算後繪製）
+        </p>
+      </div>
+    </div>
+
+    <!-- ② 建立模型 -->
+    <div class="section">
+      <div class="section-label">建立數學模型</div>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">座標設定</div>
+          <div class="prose">
+            <p>
+              設半圓半徑為 \(R\)，圓心在原點，直徑沿 \(x\) 軸，
+              半圓曲線方程式為：
+            </p>
+          </div>
+          <div class="math-block">
+            $$y = \sqrt{R^2 - x^2}, \quad x \in [-R,\, R]$$
+          </div>
+          <div class="prose">
+            <p>
+              不失一般性，令 \(R = 1\)（最終結果乘以 \(R\) 還原即可）。
+              設 5 條切線的 \(x\) 座標為 \(x_1 < x_2 < x_3 < x_4 < x_5\)。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">計算半圓總面積</div>
+          <div class="math-block">
+            $$S_{\text{total}} = \int_{-1}^{1} \sqrt{1 - x^2}\, dx = \frac{\pi}{2}$$
+          </div>
+          <div class="prose">
+            <p>每一份的面積應為：</p>
+          </div>
+          <div class="math-block">
+            $$S_{\text{each}} = \frac{\pi/2}{6} = \frac{\pi}{12}$$
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">建立「累積面積函數」\(A(t)\)</div>
+          <div class="prose">
+            <p>
+              定義從左端 \(x = -1\) 積分到 \(x = t\) 的面積：
+            </p>
+          </div>
+          <div class="math-block">
+            $$A(t) = \int_{-1}^{t} \sqrt{1 - x^2}\, dx$$
+          </div>
+          <div class="prose">
+            <p>
+              利用標準積分公式
+              \(\displaystyle\int \sqrt{1-x^2}\,dx = \frac{x\sqrt{1-x^2}}{2} + \frac{\arcsin x}{2} + C\)，
+              代入上下限後化簡：
+            </p>
+          </div>
+          <div class="math-block">
+            $$A(t) = \frac{t\sqrt{1-t^2} + \arcsin t}{2} + \frac{\pi}{4}$$
+          </div>
+          <div class="prose">
+            <p style="font-size:13px;color:var(--text-dim)">
+              驗證：\(A(1) = \frac{0 + \pi/2}{2} + \frac{\pi}{4} = \frac{\pi}{4} + \frac{\pi}{4} = \frac{\pi}{2}\) ✓
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">列出方程式</div>
+          <div class="prose">
+            <p>
+              第 \(k\) 條切線左側的面積應等於 \(\dfrac{k\pi}{12}\)，因此：
+            </p>
+          </div>
+          <div class="math-block">
+            $$A(x_k) = \frac{k\pi}{12}
+            \quad \Longrightarrow \quad
+            \frac{x_k\sqrt{1-x_k^2} + \arcsin x_k}{2} = \frac{k\pi}{12} - \frac{\pi}{4}$$
+          </div>
+          <div class="prose">
+            <p>
+              此方程式無法用代數方法求解封閉解，須使用 <strong>數值方法</strong>。
+              注意到函數 \(A(t)\) 關於 \(t=0\) 具有特殊對稱性：
+            </p>
+          </div>
+          <div class="math-block">
+            $$A(-t) + A(t) = \frac{\pi}{2}$$
+          </div>
+          <div class="prose">
+            <p>
+              因此 \(x_3 = 0\)，且 \(x_4 = -x_2\)、\(x_5 = -x_1\)。
+              <strong>實際上只需解兩個方程式</strong>（\(k=1\) 和 \(k=2\)）。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ Newton 法求解 -->
+    <div class="section">
+      <div class="section-label">數值求解：Newton–Raphson 法</div>
+
+      <div class="prose">
+        <p>
+          設 \(f(x) = \dfrac{x\sqrt{1-x^2} + \arcsin x}{2}\)，目標是解 \(f(x) = c\)（常數）。
+        </p>
+        <p>
+          Newton 法的迭代公式為：
+        </p>
+      </div>
+      <div class="math-block">
+        $$x_{n+1} = x_n - \frac{f(x_n) - c}{f'(x_n)}$$
+      </div>
+      <div class="prose">
+        <p>其中導函數為：</p>
+      </div>
+      <div class="math-block">
+        $$f'(x) = \frac{d}{dx}\left[\frac{x\sqrt{1-x^2}}{2}\right] + \frac{1}{2} \cdot \frac{1}{\sqrt{1-x^2}}
+        = \frac{\sqrt{1-x^2}}{2} - \frac{x^2}{2\sqrt{1-x^2}} + \frac{1}{2\sqrt{1-x^2}}
+        = \sqrt{1-x^2}$$
+      </div>
+      <div class="prose">
+        <p>
+          \(f'(x) = \sqrt{1-x^2} > 0\)，說明 \(f\) 在 \((-1,1)\) 上嚴格遞增，
+          Newton 法對任何初始值都能快速收斂。
+          以下是瀏覽器即時計算的迭代過程：
+        </p>
+      </div>
+
+      <div id="newton-output"></div>
+    </div>
+
+    <!-- ④ 答案 -->
+    <div class="section">
+      <div class="section-label">計算結果</div>
+      <div class="prose">
+        <p>
+          對於半徑為 \(R\) 的半圓，5 條切線的位置（從左到右）如下。
+          其中 \(x\) 以圓心為原點，向右為正：
+        </p>
+      </div>
+
+      <div id="result-table-container"></div>
+
+      <div class="insight" style="margin-top:24px;">
+        <div class="insight-title">◆ 對稱性觀察</div>
+        <p>
+          由於半圓關於 \(y\) 軸對稱，中間的切線恰好落在 \(x=0\)（即圓心正上方）。
+          其餘切線也關於 \(x=0\) 對稱，因此只需計算 \(x_1\) 和 \(x_2\) 兩個值，
+          便可得到全部 5 條切線位置。
+        </p>
+      </div>
+
+      <div class="insight" style="margin-top:12px;">
+        <div class="insight-title">◆ 幾何直覺</div>
+        <p>
+          切線並不是均勻分佈的！靠近兩端的切線（\(x_1, x_5\)）距離圓心較遠，
+          因為半圓越靠近兩端「越瘦」，同樣的水平寬度對應的面積較小，
+          所以要切得更靠外側才能湊足 \(\pi/12\) 的面積。
+        </p>
+      </div>
+    </div>
+
+    <!-- ⑤ 反思 -->
+    <div class="section">
+      <div class="section-label">解題後的反思</div>
+      <div class="prose">
+        <p>
+          這道題的核心動作是「<strong>將幾何問題轉化為積分方程</strong>」，再用數值方法求解。
+          它觸及了幾個重要觀念的交叉點：
+        </p>
+      </div>
+      <div class="insight">
+        <div class="insight-title">涉及的知識體系</div>
+        <p>
+          <strong>微積分：</strong>定積分的幾何意義（面積）、反三角函數的積分、微分與導函數。<br /><br />
+          <strong>數值方法：</strong>Newton–Raphson 迭代法、收斂性分析。<br /><br />
+          <strong>對稱性：</strong>善用函數的對稱性可大幅減少計算量。<br /><br />
+          <strong>建模思維：</strong>「累積面積函數」\(A(t)\) 是解題的關鍵抽象——
+          把「找位置」這個幾何問題，轉化成「解方程」這個代數問題。
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>全知專案 · <a href="https://github.com/Risch315815/Know_All" target="_blank">GitHub</a></p>
+  </footer>
+
+  <script>
+  // ── Core math ───────────────────────────────────────────
+  const PI = Math.PI;
+
+  // f(x) = (x*sqrt(1-x²) + arcsin(x)) / 2
+  function f(x) {
+    return (x * Math.sqrt(1 - x * x) + Math.asin(x)) / 2;
+  }
+
+  // f'(x) = sqrt(1-x²)
+  function fPrime(x) {
+    return Math.sqrt(1 - x * x);
+  }
+
+  // Newton's method: solve f(x) = target, starting from x0
+  // Returns { root, iterations }
+  function newton(target, x0) {
+    let x = x0;
+    const iters = [];
+    for (let i = 0; i < 50; i++) {
+      const fx = f(x);
+      const err = fx - target;
+      iters.push({ i: i + 1, x, fx, err });
+      if (Math.abs(err) < 1e-14) break;
+      x = x - err / fPrime(x);
+    }
+    return { root: x, iterations: iters };
+  }
+
+  // Compute the 5 cut positions for unit semicircle
+  // A(xk) = k*PI/12  =>  f(xk) = k*PI/12 - PI/4
+  const targets = [1, 2, 3, 4, 5].map(k => k * PI / 12 - PI / 4);
+  const x0s    = [-0.6, -0.3, 0, 0.3, 0.6]; // initial guesses
+
+  const results = targets.map((target, i) => {
+    if (i === 2) return { root: 0, iterations: [] }; // x3 = 0 by symmetry
+    return newton(target, x0s[i]);
+  });
+
+  const cuts = results.map(r => r.root);
+
+  // ── Newton iteration table ───────────────────────────────
+  function renderNewtonTable(k, result) {
+    const iters = result.iterations.slice(0, 6);
+    const rows = iters.map((it, idx) => {
+      const converged = idx === iters.length - 1;
+      return `<tr class="${converged ? 'converged' : ''}">
+        <td>${it.i}</td>
+        <td>${it.x.toFixed(10)}</td>
+        <td>${it.fx.toFixed(10)}</td>
+        <td>${it.err.toExponential(3)}</td>
+      </tr>`;
+    }).join('');
+
+    return `
+      <p style="font-size:14px;color:var(--text-muted);margin:16px 0 8px;">
+        求解 \\(x_${k}\\)，目標值 \\(c = ${(targets[k-1]).toFixed(6)}\\)，初始值 \\(x_0 = ${x0s[k-1]}\\)：
+      </p>
+      <div style="overflow-x:auto;margin-bottom:24px;">
+        <table class="newton-table">
+          <thead><tr>
+            <th>迭代次數</th><th>xₙ</th><th>f(xₙ)</th><th>誤差</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
+
+  const newtonOut = document.getElementById('newton-output');
+  newtonOut.innerHTML =
+    renderNewtonTable(1, results[0]) +
+    renderNewtonTable(2, results[1]);
+
+  // ── Result table ─────────────────────────────────────────
+  const colors = ['#7c9ef8','#a78bfa','#34d399','#f59e0b','#f87171'];
+  const labels = ['x₁','x₂','x₃','x₄','x₅'];
+  const symNote = ['','','（中央，對稱軸）','= −x₂（對稱）','= −x₁（對稱）'];
+
+  const tableRows = cuts.map((x, i) => `
+    <tr>
+      <td><span class="highlight">${labels[i]}</span></td>
+      <td><span class="highlight">${x.toFixed(6)}</span> · R</td>
+      <td style="color:var(--text-muted)">
+        ${(x * 100).toFixed(3)}% · R
+      </td>
+      <td style="color:var(--text-dim);font-size:12px;">${symNote[i]}</td>
+    </tr>`).join('');
+
+  document.getElementById('result-table-container').innerHTML = `
+    <div style="overflow-x:auto;">
+      <table class="result-table">
+        <thead><tr>
+          <th>切線</th><th>位置（\$R=1\$ 時）</th><th>距圓心比例</th><th>備註</th>
+        </tr></thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+    </div>`;
+
+  // ── SVG diagram ──────────────────────────────────────────
+  const svg = document.getElementById('semicircle-svg');
+  const W = 580, H = 220;
+  const cx = W / 2, cy = H - 20; // center of diameter on bottom
+  const R_px = 170; // radius in pixels
+
+  const sectionColors = [
+    '#1e3a5f','#2d3a7a','#1e4a3f','#3a2d1e','#3a1e2d','#2d1e3a'
+  ];
+
+  // Build SVG content
+  let svgContent = '';
+
+  // Draw 6 sections as filled paths
+  const allXs = [-1, ...cuts, 1];
+  for (let i = 0; i < 6; i++) {
+    const x1 = allXs[i], x2 = allXs[i + 1];
+    const px1 = cx + x1 * R_px;
+    const px2 = cx + x2 * R_px;
+    const py1_top = cy - Math.sqrt(Math.max(0, 1 - x1*x1)) * R_px;
+    const py2_top = cy - Math.sqrt(Math.max(0, 1 - x2*x2)) * R_px;
+
+    // Arc path from (px1,cy) up along circle to (px2,cy)
+    // Using SVG arc: large-arc=0 for small arcs
+    svgContent += `<path d="M ${px1} ${cy} L ${px1} ${py1_top} A ${R_px} ${R_px} 0 0 1 ${px2} ${py2_top} L ${px2} ${cy} Z"
+      fill="${sectionColors[i]}" opacity="0.8" stroke="none"/>`;
+  }
+
+  // Semicircle outline
+  svgContent += `<path d="M ${cx - R_px} ${cy} A ${R_px} ${R_px} 0 0 1 ${cx + R_px} ${cy}"
+    fill="none" stroke="#2a2f45" stroke-width="1.5"/>`;
+
+  // Diameter line
+  svgContent += `<line x1="${cx - R_px}" y1="${cy}" x2="${cx + R_px}" y2="${cy}"
+    stroke="#2a2f45" stroke-width="1.5"/>`;
+
+  // Cut lines
+  cuts.forEach((x, i) => {
+    const px = cx + x * R_px;
+    const topY = cy - Math.sqrt(Math.max(0, 1 - x*x)) * R_px;
+    svgContent += `<line x1="${px}" y1="${cy}" x2="${px}" y2="${topY}"
+      stroke="#7c9ef8" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+    // Label
+    svgContent += `<text x="${px}" y="${cy + 16}" text-anchor="middle"
+      font-size="11" fill="#8891aa" font-family="system-ui">${labels[i]}</text>`;
+    // x value label
+    svgContent += `<text x="${px}" y="${cy + 28}" text-anchor="middle"
+      font-size="9.5" fill="#555e7a" font-family="monospace">${x.toFixed(3)}R</text>`;
+  });
+
+  // Section labels
+  for (let i = 0; i < 6; i++) {
+    const x1 = allXs[i], x2 = allXs[i + 1];
+    const xMid = (x1 + x2) / 2;
+    const yMidHeight = Math.sqrt(Math.max(0, 1 - xMid*xMid));
+    const pxMid = cx + xMid * R_px;
+    const pyMid = cy - yMidHeight * R_px * 0.45;
+    svgContent += `<text x="${pxMid}" y="${pyMid}" text-anchor="middle"
+      font-size="11" fill="#e8eaf0" font-family="system-ui" opacity="0.7">π/12</text>`;
+  }
+
+  // Axes labels
+  svgContent += `<text x="${cx - R_px - 6}" y="${cy + 4}" text-anchor="end"
+    font-size="11" fill="#555e7a" font-family="system-ui">−R</text>`;
+  svgContent += `<text x="${cx + R_px + 6}" y="${cy + 4}" text-anchor="start"
+    font-size="11" fill="#555e7a" font-family="system-ui">+R</text>`;
+  svgContent += `<text x="${cx}" y="${cy + 4}" text-anchor="middle"
+    font-size="11" fill="#555e7a" font-family="system-ui">0</text>`;
+
+  svg.innerHTML = svgContent;
+
+  // Re-render KaTeX after dynamic content injection
+  if (window.renderMathInElement) {
+    renderMathInElement(document.getElementById('newton-output'), {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '\\(', right: '\\)', display: false }
+      ]
+    });
+    renderMathInElement(document.getElementById('result-table-container'), {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '\\(', right: '\\)', display: false }
+      ]
+    });
+  }
+  </script>
+
+</body>
+</html>
