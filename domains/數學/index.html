@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>數學知識地圖 · 全知專案</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+  <style>
+    /* ── Page layout ─────────────────────────────── */
+    .math-page { max-width: 1000px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* ── Section headers ──────────────────────────── */
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
+    }
+    .section-block { margin-bottom: 56px; }
+    .section-block h2 { font-size: 20px; font-weight: 600; margin-bottom: 18px; }
+
+    /* ── Dependency Graph ─────────────────────────── */
+    .graph-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 4px 12px;
+      overflow-x: auto;
+      margin-bottom: 10px;
+    }
+    #mathGraph { display: block; margin: 0 auto; }
+
+    .graph-node rect {
+      rx: 6; ry: 6;
+      transition: filter 0.15s;
+      cursor: pointer;
+    }
+    .graph-node:hover rect { filter: brightness(1.3); }
+    .graph-node text { pointer-events: none; font-family: system-ui, sans-serif; }
+
+    .graph-edge { fill: none; stroke-width: 1.5; }
+
+    /* Legend */
+    .graph-legend {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      padding: 12px 16px;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+    /* ── Branch cards ────────────────────────────── */
+    .branch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+    }
+
+    .branch-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .branch-card:hover { border-color: var(--accent-dim); }
+
+    .branch-card-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .branch-card-color {
+      width: 4px; align-self: stretch; border-radius: 2px; flex-shrink: 0;
+    }
+    .branch-card-titles { flex: 1; min-width: 0; }
+    .branch-card-name { font-size: 15px; font-weight: 600; }
+    .branch-card-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .branch-card-chevron { color: var(--text-dim); font-size: 13px; transition: transform 0.2s; flex-shrink: 0; }
+    .branch-card.open .branch-card-chevron { transform: rotate(90deg); }
+
+    .branch-card-body {
+      display: none;
+      padding: 0 16px 16px 32px;
+      border-top: 1px solid var(--border);
+    }
+    .branch-card.open .branch-card-body { display: block; }
+
+    .branch-card-body h4 {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-dim);
+      margin: 14px 0 6px;
+    }
+    .branch-card-body ul {
+      list-style: none; padding: 0; margin: 0;
+    }
+    .branch-card-body ul li {
+      font-size: 13px; color: var(--text-muted); padding: 3px 0;
+      display: flex; align-items: baseline; gap: 6px;
+    }
+    .branch-card-body ul li::before {
+      content: '—'; color: var(--text-dim); flex-shrink: 0; font-size: 11px;
+    }
+    .rel-arrow { font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+    .rel-target { color: var(--accent); }
+
+    /* ── Learning paths ───────────────────────────── */
+    .paths-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .path-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .path-label {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .path-title { font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+    .path-steps { list-style: none; padding: 0; margin: 0; }
+    .path-steps li {
+      display: flex; align-items: center; gap: 8px;
+      padding: 5px 0; font-size: 13px; color: var(--text-muted);
+    }
+    .path-steps li .step-num {
+      width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700;
+    }
+
+    /* ── Spectrum table ───────────────────────────── */
+    .spectrum-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .spectrum-table th {
+      padding: 10px 14px; text-align: left; font-size: 11px;
+      font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--text-dim); border-bottom: 1px solid var(--border);
+    }
+    .spectrum-table td {
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .spectrum-table tr:last-child td { border-bottom: none; }
+    .spectrum-table td:first-child { color: var(--text); font-weight: 500; }
+    .stars { letter-spacing: 0.1em; font-size: 12px; }
+    .star-filled { color: #f59e0b; }
+    .star-empty { color: var(--text-dim); }
+    .prereq-tag {
+      font-size: 11px; padding: 2px 8px;
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text-muted);
+      display: inline-block; margin: 1px 2px;
+    }
+
+    /* ── Todo list ────────────────────────────────── */
+    .todo-list { list-style: none; padding: 0; }
+    .todo-list li {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; font-size: 14px; color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .todo-list li:last-child { border-bottom: none; }
+    .todo-check {
+      width: 16px; height: 16px; border: 1px solid var(--border);
+      border-radius: 4px; flex-shrink: 0;
+    }
+
+    /* Category colors */
+    .c-foundation { background: #4a5270; }
+    .c-core       { background: #2d4a7a; }
+    .c-pure       { background: #1e4a3f; }
+    .c-applied    { background: #5a3a1e; }
+    .c-cs         { background: #3a1e5a; }
+
+    .c-foundation-text { color: #9aa3c8; }
+    .c-core-text  { color: #7c9ef8; }
+    .c-pure-text  { color: #34d399; }
+    .c-applied-text { color: #f59e0b; }
+    .c-cs-text    { color: #a78bfa; }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <a href="../../index.html" style="display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;">
+          <span class="logo-icon">◈</span>
+          <span class="logo-text">全知專案</span>
+        </a>
+      </div>
+      <nav class="site-nav">
+        <a href="../../index.html" class="nav-link">地圖</a>
+        <a href="index.html" class="nav-link active">數學</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="domain-page-header">
+      <span class="domain-page-icon">∑</span>
+      <h1 class="domain-page-title">數學知識地圖</h1>
+      <p class="domain-page-desc">數學不是一條線，而是一張網。各分支相互依賴、彼此滋養。</p>
+    </div>
+
+    <div class="math-page">
+
+      <!-- ① 依賴關係圖 -->
+      <div class="section-block">
+        <div class="section-label">依賴關係總覽</div>
+        <div class="graph-wrap">
+          <svg id="mathGraph" viewBox="0 0 820 560" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div class="graph-legend">
+          <div class="legend-item"><div class="legend-dot c-foundation"></div>語言與基礎</div>
+          <div class="legend-item"><div class="legend-dot c-core"></div>核心工具</div>
+          <div class="legend-item"><div class="legend-dot c-pure"></div>純數學</div>
+          <div class="legend-item"><div class="legend-dot c-applied"></div>應用數學</div>
+          <div class="legend-item"><div class="legend-dot c-cs"></div>計算機導向</div>
+        </div>
+      </div>
+
+      <!-- ② 各分支詳解 -->
+      <div class="section-block">
+        <div class="section-label">各分支詳解</div>
+        <div class="branch-grid" id="branchGrid"></div>
+      </div>
+
+      <!-- ③ 學習路徑 -->
+      <div class="section-block">
+        <div class="section-label">學習路徑建議</div>
+        <div class="paths-grid" id="pathsGrid"></div>
+      </div>
+
+      <!-- ④ 成熟度光譜 -->
+      <div class="section-block">
+        <div class="section-label">各分支的直覺 vs. 抽象程度</div>
+        <div style="overflow-x:auto;">
+          <table class="spectrum-table" id="spectrumTable"></table>
+        </div>
+      </div>
+
+      <!-- ⑤ 待補充 -->
+      <div class="section-block">
+        <div class="section-label">待補充</div>
+        <ul class="todo-list">
+          <li><div class="todo-check"></div>各分支的經典教材推薦</li>
+          <li><div class="todo-check"></div>與問題集的連結（哪道題觸及哪個分支）</li>
+          <li><div class="todo-check"></div>微分幾何的單獨展開</li>
+          <li><div class="todo-check"></div>資訊理論的位置（Shannon 熵、資料壓縮）</li>
+          <li><div class="todo-check"></div>金融數學的位置（隨機微分方程）</li>
+        </ul>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>全知專案 · <a href="https://github.com/Risch315815/Know_All" target="_blank">GitHub</a></p>
+  </footer>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────
+
+const CATS = {
+  foundation: { label: '語言與基礎', fill: '#2a2f4a', stroke: '#4a5270', text: '#9aa3c8' },
+  core:       { label: '核心工具',   fill: '#1a2a4a', stroke: '#2d4a7a', text: '#7c9ef8' },
+  pure:       { label: '純數學',     fill: '#0e2a20', stroke: '#1e4a3f', text: '#34d399' },
+  applied:    { label: '應用數學',   fill: '#2a1e0e', stroke: '#5a3a1e', text: '#f59e0b' },
+  cs:         { label: '計算機導向', fill: '#1e0e2a', stroke: '#3a1e5a', text: '#a78bfa' },
+};
+
+// Graph nodes: id, name, sub, x, y, cat
+const NODES = [
+  { id: 'logic',    name: '邏輯 / 集合論',  sub: 'Logic & Set Theory',  x: 410, y: 28,  cat: 'foundation' },
+  { id: 'arith',    name: '算術 / 前微積分', sub: 'Arithmetic',           x: 410, y: 116, cat: 'foundation' },
+  { id: 'linalg',   name: '線性代數',        sub: 'Linear Algebra',       x: 160, y: 216, cat: 'core'  },
+  { id: 'algebra',  name: '代數學',          sub: 'Algebra',              x: 390, y: 216, cat: 'core'  },
+  { id: 'numthy',   name: '數論',            sub: 'Number Theory',        x: 640, y: 216, cat: 'pure'  },
+  { id: 'calculus', name: '微積分',          sub: 'Calculus',             x: 160, y: 316, cat: 'core'  },
+  { id: 'analysis', name: '分析學',          sub: 'Analysis',             x: 390, y: 316, cat: 'pure'  },
+  { id: 'geometry', name: '幾何學',          sub: 'Geometry',             x: 640, y: 316, cat: 'pure'  },
+  { id: 'prob',     name: '機率論',          sub: 'Probability',          x: 100, y: 416, cat: 'applied'},
+  { id: 'topology', name: '拓撲學',          sub: 'Topology',             x: 530, y: 416, cat: 'pure'  },
+  { id: 'stats',    name: '統計學',          sub: 'Statistics',           x: 280, y: 416, cat: 'applied'},
+  { id: 'discrete', name: '離散數學',        sub: 'Discrete Math',        x: 700, y: 416, cat: 'cs'    },
+  { id: 'numerical',name: '數值方法',        sub: 'Numerical Methods',    x: 390, y: 504, cat: 'applied'},
+];
+
+// Graph edges: from, to, dashed
+const EDGES = [
+  { f: 'logic',    t: 'arith',    dash: false },
+  { f: 'logic',    t: 'discrete', dash: true  },
+  { f: 'arith',    t: 'linalg',   dash: false },
+  { f: 'arith',    t: 'algebra',  dash: false },
+  { f: 'arith',    t: 'numthy',   dash: false },
+  { f: 'algebra',  t: 'linalg',   dash: false },
+  { f: 'algebra',  t: 'numthy',   dash: true  },
+  { f: 'algebra',  t: 'analysis', dash: false },
+  { f: 'linalg',   t: 'calculus', dash: false },
+  { f: 'linalg',   t: 'analysis', dash: true  },
+  { f: 'calculus', t: 'analysis', dash: false },
+  { f: 'calculus', t: 'geometry', dash: false },
+  { f: 'analysis', t: 'prob',     dash: false },
+  { f: 'analysis', t: 'topology', dash: false },
+  { f: 'geometry', t: 'topology', dash: false },
+  { f: 'geometry', t: 'discrete', dash: true  },
+  { f: 'prob',     t: 'stats',    dash: false },
+  { f: 'prob',     t: 'discrete', dash: true  },
+  { f: 'calculus', t: 'numerical',dash: false },
+  { f: 'linalg',   t: 'numerical',dash: false },
+  { f: 'analysis', t: 'numerical',dash: true  },
+];
+
+// Branch cards data
+const BRANCHES = [
+  {
+    id: 'logic', name: '邏輯學 / 集合論', sub: 'Logic & Set Theory', cat: 'foundation',
+    what: '數學的「語言規則」。定義什麼叫做「證明」、什麼叫做「集合」。所有定理的嚴格表述都建立在這套語言之上。',
+    concepts: ['命題邏輯、謂詞邏輯', '集合：聯集、交集、補集', '函數的嚴格定義（定義域、值域）', '可數與不可數無窮、Cantor 對角線論證'],
+    relations: [
+      { dir: '→', target: '所有分支', note: '提供語言基礎，無此則無法嚴格定義任何數學概念' },
+      { dir: '↔', target: '代數學', note: '群、環本質上是帶有運算的集合' },
+      { dir: '↔', target: '離散數學 / CS', note: '布林代數、圖靈機直接源自數理邏輯' },
+    ]
+  },
+  {
+    id: 'arith', name: '算術 / 前微積分', sub: 'Arithmetic & Pre-calculus', cat: 'foundation',
+    what: '數的計算規則，以及進入高等數學前的準備知識：代數運算、三角函數、指數對數、函數概念。',
+    concepts: ['四則運算、因式分解、方程式', '三角函數及其恆等式（sin、cos、tan）', '指數函數與對數函數', '函數的概念（圖形、合成、反函數）'],
+    relations: [
+      { dir: '→', target: '微積分', note: '極限、導函數需要紮實的函數觀念' },
+      { dir: '→', target: '數論', note: '對整數性質的深入研究從算術出發' },
+      { dir: '→', target: '微積分（三角代換）', note: '見 #001 半圓等分問題', link: '../../問題集/001-半圓等分.html' },
+    ]
+  },
+  {
+    id: 'linalg', name: '線性代數', sub: 'Linear Algebra', cat: 'core',
+    what: '研究向量、矩陣與線性映射。是微積分之外最實用的數學分支，幾乎所有應用數學都用到它。',
+    concepts: ['向量空間、線性映射', '矩陣運算、行列式', '線性方程組（高斯消去法）', '特徵值與特徵向量'],
+    relations: [
+      { dir: '↔', target: '幾何學', note: '向量是幾何空間的代數語言；旋轉縮放是線性變換' },
+      { dir: '↔', target: '分析學（泛函）', note: '函數空間本身是向量空間' },
+      { dir: '→', target: '機率統計', note: '共變異數矩陣、主成分分析（PCA）' },
+      { dir: '→', target: '機器學習', note: '神經網路前向傳播 = 矩陣乘法' },
+    ]
+  },
+  {
+    id: 'algebra', name: '代數學', sub: 'Algebra', cat: 'core',
+    what: '研究「運算結構」。從解方程式出發，抽象到群、環、域等代數結構，揭示不同數學物件的共同規律。',
+    concepts: ['群（Group）：只有一種運算的結構', '環（Ring）：有加法與乘法', '域（Field）：可做除法的環', '同態與同構（Homomorphism / Isomorphism）'],
+    relations: [
+      { dir: '↔', target: '數論', note: '有限域、Galois 理論是密碼學的基礎' },
+      { dir: '↔', target: '幾何 / 拓撲', note: '對稱群描述幾何物件；代數拓撲用群描述「洞」' },
+      { dir: '↔', target: '複分析', note: 'Galois 理論連結域論與多項式的根' },
+    ]
+  },
+  {
+    id: 'numthy', name: '數論', sub: 'Number Theory', cat: 'pure',
+    what: '研究整數（尤其是質數）的性質。看似基礎，實則極深，並出乎意料地成為現代密碼學的基石。',
+    concepts: ['質數、唯一因式分解定理', '模算術（Modular Arithmetic）', '費馬小定理、歐拉定理', 'Diophantine 方程（整數解方程）'],
+    relations: [
+      { dir: '↔', target: '抽象代數', note: '有限域、Galois 理論深度交叉' },
+      { dir: '↔', target: '複分析', note: '解析數論用複分析研究質數分布（黎曼ζ函數）' },
+      { dir: '→', target: '密碼學', note: 'RSA = 大數因式分解困難' },
+    ]
+  },
+  {
+    id: 'calculus', name: '微積分', sub: 'Calculus', cat: 'core',
+    what: '研究連續變化的工具。微分（瞬時變化率）與積分（累積量）由微積分基本定理連接，是自然科學的語言。',
+    concepts: ['極限 → 導函數 → 積分', '微積分基本定理', '多變數微積分（偏導、多重積分）', '向量微積分（梯度、Stokes、Gauss）', '常微分方程（ODE）'],
+    relations: [
+      { dir: '→', target: '分析學', note: '微積分的直覺提煉成 ε-δ 嚴格定義' },
+      { dir: '→', target: '微分幾何', note: '研究曲面上的微積分' },
+      { dir: '→', target: '物理', note: '牛頓力學、電磁學、熱力學的語言' },
+      { dir: '↔', target: '線性代數', note: 'Jacobian、Hessian 連接兩者' },
+    ]
+  },
+  {
+    id: 'analysis', name: '分析學', sub: 'Analysis', cat: 'pure',
+    what: '微積分的嚴格化版本，分三個層次：實分析（嚴格基礎）→ 複分析（推廣至複數）→ 泛函分析（無窮維空間）。',
+    concepts: ['實分析：極限的 ε-δ 定義、Lebesgue 積分', '複分析：解析函數、Cauchy 定理、留數定理', '泛函分析：Banach / Hilbert 空間、Fourier 分析', '測度論：機率的嚴格基礎'],
+    relations: [
+      { dir: '→', target: '機率論', note: '測度論提供機率的嚴格定義（機率 = 測度）' },
+      { dir: '→', target: '拓撲學', note: '連續、緊緻等概念的拓撲推廣' },
+      { dir: '→', target: '量子力學', note: '量子態是希爾伯特空間中的向量' },
+      { dir: '→', target: '偏微分方程', note: '泛函分析大量用於 PDE 求解' },
+    ]
+  },
+  {
+    id: 'geometry', name: '幾何學', sub: 'Geometry', cat: 'pure',
+    what: '研究空間與形狀。從具體的歐氏幾何出發，依賴的工具越來越強大，最終連接到現代物理。',
+    concepts: ['歐氏幾何：畢氏定理、三角形', '解析幾何：用座標代數研究形狀', '微分幾何：曲率、測地線（依賴微積分）', '代數幾何：用方程描述幾何物件'],
+    relations: [
+      { dir: '↔', target: '代數', note: '解析幾何與代數幾何互相借用工具' },
+      { dir: '→', target: '拓撲學', note: '拓撲是幾何的「柔化」版本' },
+      { dir: '→', target: '廣義相對論', note: '黎曼幾何（微分幾何的一支）是 GR 語言' },
+    ]
+  },
+  {
+    id: 'prob', name: '機率論 / 統計學', sub: 'Probability & Statistics', cat: 'applied',
+    what: '機率論研究隨機現象（有嚴格測度論基礎）；統計學從資料推斷規律。兩者互為表裡。',
+    concepts: ['隨機變數、期望值、變異數', '大數法則、中央極限定理', '條件機率、Bayes 定理', '假設檢定、信賴區間', '隨機過程（Markov chain、布朗運動）'],
+    relations: [
+      { dir: '←', target: '分析學（測度論）', note: '機率的嚴格定義依賴 Lebesgue 測度' },
+      { dir: '←', target: '組合論', note: '計算離散事件的機率' },
+      { dir: '→', target: '機器學習', note: '幾乎所有 ML 模型的數學基礎' },
+      { dir: '→', target: '金融數學', note: '隨機微分方程（Black-Scholes）' },
+    ]
+  },
+  {
+    id: 'topology', name: '拓撲學', sub: 'Topology', cat: 'pure',
+    what: '研究「連續變形下不變的性質」。咖啡杯與甜甜圈在拓撲上是一樣的，因為都只有一個洞。',
+    concepts: ['開集、閉集、緊緻性、連通性', '同胚（連續雙射）', '代數拓撲：基本群、同調群', '曲面分類定理'],
+    relations: [
+      { dir: '←', target: '幾何學', note: '去掉距離概念後的幾何推廣' },
+      { dir: '←', target: '實分析', note: '連續、緊緻等概念的一般化' },
+      { dir: '↔', target: '代數', note: '代數拓撲用群描述空間結構' },
+      { dir: '→', target: '量子場論 / 材料科學', note: '拓撲不變量、拓撲絕緣體' },
+    ]
+  },
+  {
+    id: 'discrete', name: '離散數學', sub: 'Discrete Mathematics', cat: 'cs',
+    what: '研究「不連續」離散結構的數學，是電腦科學的直接數學語言。',
+    concepts: ['組合論：排列組合、生成函數', '圖論：最短路徑、樹、著色問題', '數理邏輯：布林代數', '自動機理論：有限狀態機、圖靈機'],
+    relations: [
+      { dir: '←', target: '集合論', note: '離散結構建立在集合語言上' },
+      { dir: '↔', target: '機率論', note: '隨機圖、隨機演算法' },
+      { dir: '↔', target: '線性代數', note: '譜圖論（圖的特徵值）' },
+      { dir: '→', target: 'CS：演算法、密碼學', note: '演算法分析、網路科學的直接工具' },
+    ]
+  },
+  {
+    id: 'numerical', name: '數值方法', sub: 'Numerical Methods', cat: 'applied',
+    what: '研究如何用電腦近似求解解析上無法精確計算的問題。理論與計算的橋樑。',
+    concepts: ['誤差分析、浮點數', '數值積分（梯形法、辛普森法）', 'Newton 法（方程求根）', '數值線性代數（LU 分解、SVD）', 'ODE 數值解（Runge-Kutta）'],
+    relations: [
+      { dir: '←', target: '微積分', note: '對積分、微分方程的近似計算' },
+      { dir: '←', target: '線性代數', note: '大型線性方程組的高效求解' },
+      { dir: '←', target: '分析學', note: '收斂性與誤差界的嚴格證明' },
+      { dir: '→', target: '工程 / ML / 物理模擬', note: '所有計算科學的實作基礎', link: '../../問題集/001-半圓等分.html' },
+    ]
+  },
+];
+
+const PATHS = [
+  {
+    label: '路徑 A', labelColor: '#34d399',
+    title: '純數學',
+    steps: [
+      { n: 1, text: '邏輯 / 集合論' },
+      { n: 2, text: '線性代數' },
+      { n: 3, text: '實分析' },
+      { n: 4, text: '複分析　或　拓撲學' },
+      { n: 5, text: '抽象代數' },
+      { n: 6, text: '代數幾何　或　數論' },
+    ],
+    color: '#0e2a20', border: '#1e4a3f', numBg: '#1e4a3f', numColor: '#34d399'
+  },
+  {
+    label: '路徑 B', labelColor: '#f59e0b',
+    title: '應用數學 / 工程',
+    steps: [
+      { n: 1, text: '微積分（單→多變數→向量）' },
+      { n: 2, text: '線性代數' },
+      { n: 3, text: '常微分方程' },
+      { n: 4, text: '偏微分方程' },
+      { n: 5, text: '數值方法' },
+      { n: 6, text: '機率統計' },
+    ],
+    color: '#2a1e0e', border: '#5a3a1e', numBg: '#5a3a1e', numColor: '#f59e0b'
+  },
+  {
+    label: '路徑 C', labelColor: '#a78bfa',
+    title: '電腦科學 / 機器學習',
+    steps: [
+      { n: 1, text: '離散數學（邏輯、圖論）' },
+      { n: 2, text: '線性代數' },
+      { n: 3, text: '機率統計' },
+      { n: 4, text: '微積分（理解梯度下降）' },
+      { n: 5, text: '資訊理論' },
+      { n: 6, text: '數值方法（選修）' },
+    ],
+    color: '#1e0e2a', border: '#3a1e5a', numBg: '#3a1e5a', numColor: '#a78bfa'
+  },
+];
+
+const SPECTRUM = [
+  { name: '算術 / 前微積分', intuition: 5, abstract: 1, prereq: [] },
+  { name: '線性代數',        intuition: 4, abstract: 3, prereq: ['算術'] },
+  { name: '微積分',          intuition: 4, abstract: 2, prereq: ['算術'] },
+  { name: '離散數學',        intuition: 4, abstract: 3, prereq: ['邏輯', '算術'] },
+  { name: '機率統計',        intuition: 3, abstract: 3, prereq: ['微積分', '組合'] },
+  { name: '數值方法',        intuition: 4, abstract: 2, prereq: ['微積分', '線性代數'] },
+  { name: '數論',            intuition: 4, abstract: 4, prereq: ['算術', '代數'] },
+  { name: '複分析',          intuition: 3, abstract: 4, prereq: ['實分析'] },
+  { name: '實分析',          intuition: 2, abstract: 4, prereq: ['微積分'] },
+  { name: '抽象代數',        intuition: 2, abstract: 4, prereq: ['線性代數'] },
+  { name: '幾何學',          intuition: 4, abstract: 3, prereq: ['微積分', '線性代數'] },
+  { name: '拓撲學',          intuition: 2, abstract: 5, prereq: ['實分析', '幾何'] },
+];
+
+// ── Render graph ─────────────────────────────────────────────────────
+
+function renderGraph() {
+  const svg = document.getElementById('mathGraph');
+  const W = 820, H = 560;
+  const NW = 110, NH = 36; // node width/height
+
+  // Build node lookup
+  const nodeMap = {};
+  NODES.forEach(n => { nodeMap[n.id] = n; });
+
+  let html = '';
+
+  // Edges first (so nodes appear on top)
+  EDGES.forEach(e => {
+    const from = nodeMap[e.f], to = nodeMap[e.t];
+    if (!from || !to) return;
+
+    // Simple straight line from bottom-center of from to top-center of to
+    const x1 = from.x, y1 = from.y + NH / 2;
+    const x2 = to.x,   y2 = to.y  - NH / 2;
+
+    // Bezier control points
+    const midY = (y1 + y2) / 2;
+    const d = `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
+
+    const cat = CATS[from.cat];
+    html += `<path d="${d}" class="graph-edge"
+      stroke="${cat.stroke}" opacity="0.5"
+      ${e.dash ? 'stroke-dasharray="5 3"' : ''}/>`;
+  });
+
+  // Arrowhead marker
+  html = `<defs>
+    ${Object.entries(CATS).map(([id, c]) =>
+      `<marker id="arrow-${id}" markerWidth="6" markerHeight="6"
+        refX="5" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L6,3 z" fill="${c.stroke}" opacity="0.6"/>
+      </marker>`
+    ).join('')}
+  </defs>` + html;
+
+  // Nodes
+  NODES.forEach(n => {
+    const cat = CATS[n.cat];
+    const x = n.x - NW / 2, y = n.y - NH / 2;
+    html += `
+      <g class="graph-node" data-id="${n.id}" onclick="highlightBranch('${n.id}')">
+        <rect x="${x}" y="${y}" width="${NW}" height="${NH}" rx="6" ry="6"
+          fill="${cat.fill}" stroke="${cat.stroke}" stroke-width="1.5"/>
+        <text x="${n.x}" y="${n.y - 5}" text-anchor="middle"
+          font-size="11.5" font-weight="600" fill="${cat.text}">${n.name}</text>
+        <text x="${n.x}" y="${n.y + 9}" text-anchor="middle"
+          font-size="9" fill="${cat.stroke}">${n.sub}</text>
+      </g>`;
+  });
+
+  svg.innerHTML = html;
+}
+
+// ── Render branch cards ───────────────────────────────────────────────
+
+function stars(filled, total = 5) {
+  let s = '';
+  for (let i = 0; i < total; i++) {
+    s += i < filled
+      ? '<span class="star-filled">★</span>'
+      : '<span class="star-empty">☆</span>';
+  }
+  return `<span class="stars">${s}</span>`;
+}
+
+function renderBranches() {
+  const grid = document.getElementById('branchGrid');
+  grid.innerHTML = BRANCHES.map(b => {
+    const cat = CATS[b.cat];
+    const concepts = b.concepts.map(c => `<li>${c}</li>`).join('');
+    const rels = b.relations.map(r => `
+      <li>
+        <span class="rel-arrow">${r.dir}</span>
+        <span>${r.link
+          ? `<a href="${r.link}" class="rel-target">${r.target}</a>`
+          : `<span class="rel-target">${r.target}</span>`}：${r.note}</span>
+      </li>`).join('');
+    return `
+      <div class="branch-card" id="card-${b.id}">
+        <div class="branch-card-header" onclick="toggleCard('${b.id}')">
+          <div class="branch-card-color" style="background:${cat.stroke}"></div>
+          <div class="branch-card-titles">
+            <div class="branch-card-name">${b.name}</div>
+            <div class="branch-card-sub">${b.sub}</div>
+          </div>
+          <span class="branch-card-chevron">›</span>
+        </div>
+        <div class="branch-card-body">
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin:14px 0 0;">${b.what}</p>
+          <h4>核心概念</h4>
+          <ul>${concepts}</ul>
+          <h4>與其他分支的關係</h4>
+          <ul>${rels}</ul>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── Render paths ──────────────────────────────────────────────────────
+
+function renderPaths() {
+  const grid = document.getElementById('pathsGrid');
+  grid.innerHTML = PATHS.map(p => {
+    const steps = p.steps.map(s => `
+      <li>
+        <div class="step-num" style="background:${p.numBg};color:${p.numColor}">${s.n}</div>
+        ${s.text}
+      </li>`).join('');
+    return `
+      <div class="path-card" style="background:${p.color};border-color:${p.border}">
+        <div class="path-label" style="color:${p.labelColor}">${p.label}</div>
+        <div class="path-title">${p.title}</div>
+        <ul class="path-steps">${steps}</ul>
+      </div>`;
+  }).join('');
+}
+
+// ── Render spectrum table ─────────────────────────────────────────────
+
+function renderSpectrum() {
+  const tbl = document.getElementById('spectrumTable');
+  const rows = SPECTRUM.map(row => {
+    const prereqs = row.prereq.length
+      ? row.prereq.map(p => `<span class="prereq-tag">${p}</span>`).join('')
+      : '<span style="color:var(--text-dim);font-size:12px">—</span>';
+    return `<tr>
+      <td>${row.name}</td>
+      <td>${stars(row.intuition)}</td>
+      <td>${stars(row.abstract)}</td>
+      <td>${prereqs}</td>
+    </tr>`;
+  }).join('');
+  tbl.innerHTML = `
+    <thead><tr>
+      <th>分支</th>
+      <th>直覺程度</th>
+      <th>抽象程度</th>
+      <th>建議先修</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>`;
+}
+
+// ── Interaction ───────────────────────────────────────────────────────
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  if (card) card.classList.toggle('open');
+}
+
+function highlightBranch(id) {
+  // Scroll to card and open it
+  const card = document.getElementById('card-' + id);
+  if (card) {
+    card.classList.add('open');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+
+renderGraph();
+renderBranches();
+renderPaths();
+renderSpectrum();
+</script>
+</body>
+</html>
