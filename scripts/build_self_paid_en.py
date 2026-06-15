@@ -55,7 +55,22 @@ PAGE_STYLES = """
     .table-wrap { overflow-x: auto; margin: 12px 0 20px; }
     .med-table {
       width: 100%; border-collapse: collapse; font-size: 12px;
+      table-layout: fixed;
     }
+    .med-table.cost th:nth-child(1), .med-table.cost td:nth-child(1) { width: 26%; line-height: 1.35; }
+    .med-table.cost th:nth-child(2), .med-table.cost td:nth-child(2) { width: 9%; }
+    .med-table.cost th:nth-child(3), .med-table.cost td:nth-child(3) { width: 7%; }
+    .med-table.cost th:nth-child(4), .med-table.cost td:nth-child(4) { width: 7%; }
+    .med-table.cost th:nth-child(5), .med-table.cost td:nth-child(5) { width: 9%; }
+    .med-table.cost th:nth-child(6), .med-table.cost td:nth-child(6) { width: 42%; line-height: 1.35; font-size: 11px; }
+    .med-table.cost td:nth-child(2), .med-table.cost td:nth-child(3),
+    .med-table.cost td:nth-child(4), .med-table.cost td:nth-child(5) { white-space: nowrap; font-size: 11px; }
+    #priority .med-table.cost th:nth-child(1), #priority .med-table.cost td:nth-child(1) { width: 7%; white-space: nowrap; }
+    #priority .med-table.cost th:nth-child(2), #priority .med-table.cost td:nth-child(2) { width: 13%; }
+    #priority .med-table.cost th:nth-child(3), #priority .med-table.cost td:nth-child(3) { width: 30%; }
+    #priority .med-table.cost th:nth-child(4), #priority .med-table.cost td:nth-child(4) { width: 17%; }
+    #priority .med-table.cost th:nth-child(5), #priority .med-table.cost td:nth-child(5) { width: 16%; }
+    #priority .med-table.cost th:nth-child(6), #priority .med-table.cost td:nth-child(6) { width: 17%; }
     .med-table th, .med-table td {
       border: 1px solid var(--border); padding: 8px 10px;
       text-align: left; vertical-align: top;
@@ -198,16 +213,18 @@ def build_page(content: str) -> str:
 
 def patch_tw_index():
     text = TW_INDEX.read_text(encoding="utf-8")
-    text = text.replace(
-        '<span class="sidebar-link" style="opacity:.5">English — 待上架</span>',
-        '<a href="en.html" class="sidebar-link">English (EN)</a>',
-    )
-    nav = text.replace(
-        '<a href="index.html" class="nav-link active">自費醫療 (TW)</a>',
-        '<a href="index.html" class="nav-link active">自費醫療 (TW)</a>\n        <a href="en.html" class="nav-link">Self-Paid (EN)</a>',
-        1,
-    )
-    TW_INDEX.write_text(nav, encoding="utf-8")
+    if 'href="en.html"' not in text:
+        text = text.replace(
+            '<span class="sidebar-link" style="opacity:.5">English — 待上架</span>',
+            '<a href="en.html" class="sidebar-link">English (EN)</a>',
+        )
+    if 'nav-link">Self-Paid (EN)</a>' not in text:
+        text = text.replace(
+            '<a href="index.html" class="nav-link active">自費醫療 (TW)</a>\n      </nav>',
+            '<a href="index.html" class="nav-link active">自費醫療 (TW)</a>\n        <a href="en.html" class="nav-link">Self-Paid (EN)</a>\n      </nav>',
+            1,
+        )
+    TW_INDEX.write_text(text, encoding="utf-8")
 
 
 def main():
