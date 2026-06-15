@@ -3,7 +3,15 @@
 
 const STORAGE_KEY = 'knowall_domains';
 
-const DEFAULT_DOMAINS = [];
+const DEFAULT_DOMAINS = [
+  {
+    name: 'Self-Paid Medical Tx (TW)',
+    desc: '65歲父親自費醫療項目整理 — 台灣醫學中心費用參考',
+    icon: '🏥',
+    slug: 'Self-Paid Medical Tx_TW',
+    updatedAt: Date.now(),
+  },
+];
 
 // ── Storage ──────────────────────────────────────────────
 
