@@ -52,25 +52,24 @@ PAGE_STYLES = """
     .fx-banner {
       font-size: 12px; color: var(--text-dim); margin-top: 6px;
     }
-    .table-wrap { overflow-x: auto; margin: 12px 0 20px; }
+    .table-wrap { overflow-x: auto; margin: 12px 0 20px; -webkit-overflow-scrolling: touch; }
     .med-table {
       width: 100%; border-collapse: collapse; font-size: 12px;
-      table-layout: fixed;
+      table-layout: auto;
     }
-    .med-table.cost th:nth-child(1), .med-table.cost td:nth-child(1) { width: 26%; line-height: 1.35; }
-    .med-table.cost th:nth-child(2), .med-table.cost td:nth-child(2) { width: 9%; }
-    .med-table.cost th:nth-child(3), .med-table.cost td:nth-child(3) { width: 7%; }
-    .med-table.cost th:nth-child(4), .med-table.cost td:nth-child(4) { width: 7%; }
-    .med-table.cost th:nth-child(5), .med-table.cost td:nth-child(5) { width: 9%; }
-    .med-table.cost th:nth-child(6), .med-table.cost td:nth-child(6) { width: 42%; line-height: 1.35; font-size: 11px; }
-    .med-table.cost td:nth-child(2), .med-table.cost td:nth-child(3),
-    .med-table.cost td:nth-child(4), .med-table.cost td:nth-child(5) { white-space: nowrap; font-size: 11px; }
-    #priority .med-table.cost th:nth-child(1), #priority .med-table.cost td:nth-child(1) { width: 7%; white-space: nowrap; }
-    #priority .med-table.cost th:nth-child(2), #priority .med-table.cost td:nth-child(2) { width: 13%; }
-    #priority .med-table.cost th:nth-child(3), #priority .med-table.cost td:nth-child(3) { width: 30%; }
-    #priority .med-table.cost th:nth-child(4), #priority .med-table.cost td:nth-child(4) { width: 17%; }
-    #priority .med-table.cost th:nth-child(5), #priority .med-table.cost td:nth-child(5) { width: 16%; }
-    #priority .med-table.cost th:nth-child(6), #priority .med-table.cost td:nth-child(6) { width: 17%; }
+    .med-table.cost { min-width: 700px; }
+    .med-table.cost th:nth-child(1), .med-table.cost td:nth-child(1) { min-width: 130px; max-width: 200px; line-height: 1.35; }
+    .med-table.cost th:nth-child(2), .med-table.cost td:nth-child(2),
+    .med-table.cost th:nth-child(3), .med-table.cost td:nth-child(3),
+    .med-table.cost th:nth-child(4), .med-table.cost td:nth-child(4),
+    .med-table.cost th:nth-child(5), .med-table.cost td:nth-child(5) { width: 1%; white-space: nowrap; font-size: 11px; }
+    .med-table.cost th:nth-child(6), .med-table.cost td:nth-child(6) { width: 20%; max-width: 180px; line-height: 1.35; font-size: 11px; word-break: break-word; }
+    #priority .med-table.cost th:nth-child(1), #priority .med-table.cost td:nth-child(1) { width: 1%; white-space: nowrap; }
+    #priority .med-table.cost th:nth-child(2), #priority .med-table.cost td:nth-child(2) { width: 1%; white-space: nowrap; }
+    #priority .med-table.cost th:nth-child(3), #priority .med-table.cost td:nth-child(3) { min-width: 120px; max-width: 180px; }
+    #priority .med-table.cost th:nth-child(4), #priority .med-table.cost td:nth-child(4),
+    #priority .med-table.cost th:nth-child(5), #priority .med-table.cost td:nth-child(5),
+    #priority .med-table.cost th:nth-child(6), #priority .med-table.cost td:nth-child(6) { width: 1%; white-space: nowrap; font-size: 11px; }
     .med-table th, .med-table td {
       border: 1px solid var(--border); padding: 8px 10px;
       text-align: left; vertical-align: top;
