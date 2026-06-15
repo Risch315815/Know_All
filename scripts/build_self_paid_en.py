@@ -59,15 +59,15 @@ PAGE_STYLES = """
     }
     .med-table.cost { min-width: 700px; }
     .med-table.cost th:nth-child(1), .med-table.cost td:nth-child(1) { min-width: 130px; max-width: 200px; line-height: 1.35; }
-    .med-table.cost th:nth-child(2), .med-table.cost td:nth-child(2),
+    .med-table.cost th:nth-child(2), .med-table.cost td:nth-child(2) { width: 1%; max-width: 200px; white-space: nowrap; font-size: 11px; }
     .med-table.cost th:nth-child(3), .med-table.cost td:nth-child(3),
     .med-table.cost th:nth-child(4), .med-table.cost td:nth-child(4),
     .med-table.cost th:nth-child(5), .med-table.cost td:nth-child(5) { width: 1%; white-space: nowrap; font-size: 11px; }
-    .med-table.cost th:nth-child(6), .med-table.cost td:nth-child(6) { width: 20%; max-width: 180px; line-height: 1.35; font-size: 11px; word-break: break-word; }
+    .med-table.cost th:nth-child(6), .med-table.cost td:nth-child(6) { width: 20%; max-width: 220px; line-height: 1.35; font-size: 11px; word-break: break-word; }
     #priority .med-table.cost th:nth-child(1), #priority .med-table.cost td:nth-child(1) { width: 1%; white-space: nowrap; }
     #priority .med-table.cost th:nth-child(2), #priority .med-table.cost td:nth-child(2) { width: 1%; white-space: nowrap; }
     #priority .med-table.cost th:nth-child(3), #priority .med-table.cost td:nth-child(3) { min-width: 120px; max-width: 180px; }
-    #priority .med-table.cost th:nth-child(4), #priority .med-table.cost td:nth-child(4),
+    #priority .med-table.cost th:nth-child(4), #priority .med-table.cost td:nth-child(4) { width: 1%; max-width: 200px; white-space: nowrap; font-size: 11px; }
     #priority .med-table.cost th:nth-child(5), #priority .med-table.cost td:nth-child(5),
     #priority .med-table.cost th:nth-child(6), #priority .med-table.cost td:nth-child(6) { width: 1%; white-space: nowrap; font-size: 11px; }
     .med-table th, .med-table td {
