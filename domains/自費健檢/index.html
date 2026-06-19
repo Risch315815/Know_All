@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>自費健檢決策指南 · 全知專案</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+  <style>
+    .hc-page { max-width: 1000px; margin: 0 auto; padding: 0 24px 80px; }
+
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
+    }
+    .section-block { margin-bottom: 56px; }
+    .section-block h2 { font-size: 20px; font-weight: 600; margin-bottom: 18px; }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex; gap: 0; flex-wrap: wrap;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin-bottom: 40px;
+    }
+    .stat-item {
+      flex: 1; min-width: 110px; padding: 20px 24px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num { font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1; }
+    .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* System cards */
+    .systems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .system-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px;
+      border-left: 3px solid var(--accent-dim);
+    }
+    .system-card.important { border-left-color: #5cb85c; }
+    .system-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .system-card-icon { font-size: 18px; }
+    .system-card-title { font-size: 14px; font-weight: 600; }
+    .system-tag {
+      display: inline-block; font-size: 10px; padding: 2px 7px;
+      background: rgba(92,184,92,0.15); border-radius: 10px; color: #5cb85c; margin-left: 4px;
+    }
+    .system-card-purpose { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+    .system-card-items { list-style: none; padding: 0; margin: 0; }
+    .system-card-items li { font-size: 12px; color: var(--text-dim); padding: 2px 0; }
+    .system-card-items li::before { content: '— '; }
+    .system-card-normal { margin-top: 8px; font-size: 11px; color: var(--text-dim); padding-top: 8px; border-top: 1px solid var(--border); }
+
+    /* Coverage badge */
+    .cov-badge {
+      display: inline-flex; align-items: center;
+      font-size: 12px; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .cov-high   { background: rgba(92,184,92,0.15);  color: #5cb85c; }
+    .cov-mid    { background: rgba(124,158,248,0.15); color: var(--accent); }
+    .cov-low    { background: rgba(240,192,64,0.15);  color: #f0c040; }
+
+    /* Comparison table */
+    .hc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .hc-table th {
+      padding: 10px 14px; text-align: left; font-size: 11px;
+      font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--text-dim); border-bottom: 1px solid var(--border);
+    }
+    .hc-table td {
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+      color: var(--text-muted); vertical-align: middle;
+    }
+    .hc-table tr:last-child td { border-bottom: none; }
+    .hc-table td:first-child { font-weight: 600; }
+    .hc-table tr.rec td:first-child { color: #5cb85c; }
+    .hc-table tr.rec { background: rgba(92,184,92,0.03); }
+    .cost-main { font-weight: 700; color: var(--text); }
+
+    /* Hospital accordion */
+    .hosp-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 10px; overflow: hidden;
+    }
+    .hosp-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 20px; cursor: pointer; user-select: none;
+      transition: background var(--transition);
+    }
+    .hosp-header:hover { background: rgba(255,255,255,0.025); }
+    .hosp-bar { width: 4px; align-self: stretch; border-radius: 2px; flex-shrink: 0; }
+    .hosp-name { font-size: 15px; font-weight: 600; }
+    .hosp-sub  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .hosp-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .hosp-chevron { color: var(--text-dim); font-size: 13px; transition: transform 0.2s; flex-shrink: 0; }
+    .hosp-card.open .hosp-chevron { transform: rotate(90deg); }
+    .hosp-body {
+      display: none; padding: 0 20px 20px 38px;
+      border-top: 1px solid var(--border);
+    }
+    .hosp-card.open .hosp-body { display: block; }
+
+    /* Package table */
+    .pkg-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 16px; }
+    .pkg-table th {
+      padding: 7px 12px; text-align: left; font-size: 11px;
+      color: var(--text-dim); border-bottom: 1px solid var(--border);
+    }
+    .pkg-table td {
+      padding: 7px 12px; border-bottom: 1px solid var(--border); color: var(--text-muted);
+    }
+    .pkg-table tr:last-child td { border-bottom: none; }
+    .pkg-total td { background: rgba(255,255,255,0.03); font-weight: 700; color: var(--text); }
+
+    /* Covered / missing chips */
+    .chips-row { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 14px; }
+    .chips-group { flex: 1; min-width: 180px; }
+    .chips-title {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; margin-bottom: 7px;
+    }
+    .chips-title.ok   { color: #5cb85c; }
+    .chips-title.miss { color: #f0a040; }
+    .chip {
+      display: inline-block; font-size: 11px; padding: 2px 8px;
+      border-radius: 10px; margin: 2px 3px;
+    }
+    .chip-ok   { background: rgba(92,184,92,0.12);  color: #5cb85c; }
+    .chip-miss { background: rgba(240,160,64,0.12); color: #f0a040; }
+    .gap-list { list-style: none; padding: 0; margin-top: 8px; }
+    .gap-list li { font-size: 12px; color: var(--text-muted); padding: 2px 0; }
+    .gap-list li::before { content: '→ '; color: var(--accent); }
+    .highlight-box {
+      margin-top: 14px; padding: 10px 14px;
+      background: rgba(255,255,255,0.025); border-radius: 8px;
+      font-size: 12px; color: var(--text-muted); line-height: 1.7;
+    }
+    .alt-plan-box {
+      margin-top: 10px; padding: 12px 14px;
+      border-radius: 8px; border: 1px solid; font-size: 12px;
+    }
+    .alt-plan-box strong { display: block; margin-bottom: 4px; }
+
+    /* Budget tiers */
+    .budget-list { display: flex; flex-direction: column; gap: 8px; }
+    .budget-row {
+      display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      transition: border-color var(--transition);
+    }
+    .budget-row:hover { border-color: var(--accent-dim); }
+    .budget-row.best {
+      border-color: rgba(92,184,92,0.45);
+      background: rgba(92,184,92,0.04);
+    }
+    .budget-range {
+      font-size: 12px; font-weight: 700; color: var(--accent);
+      min-width: 140px; flex-shrink: 0;
+    }
+    .budget-plan { font-size: 13px; color: var(--text); flex: 1; }
+    .budget-note { font-size: 12px; color: var(--text-dim); }
+
+    /* Region cards */
+    .region-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .region-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 16px;
+    }
+    .region-name  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 5px; }
+    .region-hosp  { font-size: 14px; font-weight: 600; color: var(--text); }
+    .region-note  { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+    /* Remedy cards */
+    .remedy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .remedy-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 16px;
+    }
+    .remedy-item { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+    .remedy-how  { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; line-height: 1.6; }
+    .remedy-cost { font-size: 12px; font-weight: 700; color: var(--accent); }
+
+    /* Info note */
+    .info-note {
+      background: rgba(124,158,248,0.06); border: 1px solid var(--accent-dim);
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.7;
+    }
+    .info-note strong { color: var(--accent); }
+
+    @media (max-width: 768px) {
+      .stats-bar { flex-direction: row; }
+      .stat-item { border-right: 1px solid var(--border); border-bottom: none; }
+      .systems-grid { grid-template-columns: 1fr; }
+      .chips-row { flex-direction: column; }
+      .budget-row { flex-direction: column; gap: 4px; }
+      .budget-range { min-width: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <a href="../../index.html" style="display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;">
+          <span class="logo-icon">◈</span>
+          <span class="logo-text">全知專案</span>
+        </a>
+      </div>
+      <nav class="site-nav">
+        <a href="../../index.html" class="nav-link">地圖</a>
+        <a href="index.html" class="nav-link active">自費健檢</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="domain-page-header">
+      <span class="domain-page-icon">🩺</span>
+      <h1 class="domain-page-title">自費健檢決策指南</h1>
+      <p class="domain-page-desc">根據醫師推薦項目，比較各大醫學中心健檢套組的涵蓋率與費用，找出最佳方案。</p>
+    </div>
+
+    <div class="hc-page">
+
+      <!-- Stats bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-num">8</div>
+          <div class="stat-label">大系統</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">14</div>
+          <div class="stat-label">核心檢查項目</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">6</div>
+          <div class="stat-label">醫院方案</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">~$46K</div>
+          <div class="stat-label">最佳 CP 值（成大 13/14）</div>
+        </div>
+      </div>
+
+      <!-- 一、8大系統 -->
+      <div class="section-block" id="systems">
+        <div class="section-label">一、醫師推薦項目</div>
+        <h2>8大系統 × 14 核心項目</h2>
+        <div class="info-note">
+          <strong>★★★ 必做優先順序：</strong>
+          幽門桿菌 → 大腸鏡 → 腹部超音波＋B/C肝 → LDCT → 腦MRI＋頸動脈超音波 → 冠狀動脈CT 或 心臟超音波
+        </div>
+        <div class="systems-grid" id="systemsGrid"></div>
+      </div>
+
+      <!-- 二、比較總覽 -->
+      <div class="section-block" id="overview">
+        <div class="section-label">二、各醫院最佳組合一覽</div>
+        <h2>涵蓋率 × 費用比較</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+          <table class="hc-table" id="comparisonTable"></table>
+        </div>
+      </div>
+
+      <!-- 三、詳細拆解 -->
+      <div class="section-block" id="detail">
+        <div class="section-label">三、各院詳細拆解</div>
+        <h2>套組組合明細（點擊展開）</h2>
+        <div id="hospitalCards"></div>
+      </div>
+
+      <!-- 四、推薦決策 -->
+      <div class="section-block" id="decision">
+        <div class="section-label">四、推薦決策</div>
+        <h2>依預算選擇</h2>
+        <div class="budget-list" id="budgetList"></div>
+
+        <h2 style="margin-top:36px;">依地區選擇</h2>
+        <div class="region-grid" id="regionGrid"></div>
+
+        <h2 style="margin-top:36px;">缺漏項目補足方式</h2>
+        <div class="remedy-grid" id="remedyGrid"></div>
+      </div>
+
+    </div><!-- .hc-page -->
+  </main>
+
+  <footer class="site-footer">
+    <p>全知專案 · <a href="https://github.com/Risch315815/Know_All" target="_blank">GitHub</a></p>
+    <p style="margin-top:6px;font-size:12px;color:var(--text-dim);">費用以各醫院文件標示為準，實際以現場確認為主 · 整理日期：2026-06-19</p>
+  </footer>
+
+  <script>
+  // ════════════════════════════════════════════════════════
+  // DATA
+  // ════════════════════════════════════════════════════════
+
+  const SYSTEMS = [
+    {
+      id: 1, icon: '🧠', title: '腦', important: false,
+      purpose: '早期發現血管問題，預防腦中風',
+      items: ['腦部 MRI（含 TOF 血管評估）', '頸動脈超音波'],
+      normal: 'MRI 無狹窄/動脈瘤；頸動脈 IMT < 0.9 mm',
+    },
+    {
+      id: 2, icon: '👁', title: '眼', important: false,
+      purpose: '眼病變、青光眼篩檢',
+      items: ['眼底檢查（散瞳）'],
+      normal: '杯盤比 C/D < 0.5；眼壓 10–21 mmHg',
+    },
+    {
+      id: 3, icon: '❤️', title: '心', important: false,
+      purpose: '預防心肌梗塞',
+      items: ['心臟超音波', '冠狀動脈 CT（512切以上）'],
+      normal: 'EF ≥ 55%；CAC Score = 0 最佳',
+    },
+    {
+      id: 4, icon: '🫁', title: '肺', important: false,
+      purpose: '肺癌篩檢',
+      items: ['低劑量電腦斷層（LDCT）'],
+      normal: '無結節；< 6 mm 低風險（Lung-RADS 2）',
+    },
+    {
+      id: 5, icon: '🫃', title: '肝膽腸胃', important: true,
+      purpose: '胃腸癌、肝癌篩檢',
+      items: ['胃鏡', '大腸鏡', '腹部超音波', '幽門桿菌（三擇一）', 'B/C 肝血液'],
+      normal: '幽門桿菌陰性；B肝抗體陽性；C肝抗體陰性',
+    },
+    {
+      id: 6, icon: '🔬', title: '乳房', important: false,
+      purpose: '乳癌篩檢',
+      items: ['< 40歲：乳房超音波', '≥ 40歲：攝影＋超音波'],
+      normal: 'BI-RADS 1–2 正常',
+    },
+    {
+      id: 7, icon: '🩸', title: '血液', important: false,
+      purpose: '基礎＋腫瘤標記',
+      items: ['CBC、血脂、肝腎功能', 'AFP、CA19-9、CEA', 'PSA（男）/ CA125、CA15-3（女）'],
+      normal: 'PSA < 4.0 ng/mL；各標記依正常範圍',
+    },
+    {
+      id: 8, icon: '⚡', title: '代謝', important: false,
+      purpose: '糖尿病前期、胰島素阻抗',
+      items: ['HbA1c', '空腹胰島素（HOMA-IR）'],
+      normal: 'HbA1c < 5.7%；HOMA-IR < 1.9',
+    },
+  ];
+
+  const HOSPITALS = [
+    {
+      name: '成大醫院', fullName: '成大醫院健康管理中心',
+      color: '#5cb85c', recommended: true,
+      combo: '腸久愛肝＋LDCT加項＋眼底',
+      costM: '約 $46,000', costF: '約 $49,500',
+      cov: 13, tot: 14,
+      missing: ['乳房攝影（女 ≥40歲）'],
+      packages: [
+        { item: '腸久愛肝套組（腦MRI＋頸動脈＋冠狀動脈CT＋胃腸鏡＋腹部MRI＋幽門桿菌＋腫瘤標記）', m: '$41,200',          f: '$44,500' },
+        { item: '加購：LDCT',              m: '約 $3,000–5,000', f: '同左' },
+        { item: '加購：眼底散瞳（眼科掛診）', m: '約 $500–1,000',   f: '同左' },
+        { item: '加購：乳房攝影（女 ≥ 40歲）',m: '—',              f: '約 $1,000–1,500' },
+        { item: '合計估算', m: '約 $45–47K', f: '約 $47.5–51K', total: true },
+      ],
+      covered: ['腦MRI', '頸動脈', '心臟超音波＋256切CT', '胃鏡', '大腸鏡', '腹部超音波＋腹部MRI', '幽門桿菌', 'B/C肝', '乳房超音波（女）', '腫瘤標記', 'HbA1c', '胰島素'],
+      gaps: ['LDCT → 加購補足', '眼底散瞳 → 眼科掛診（約 $500–1,000）'],
+      highlight: '腸久愛肝為所有套組中 CP值最高，特別亮點：含腹部MRI精查胰臟癌＋肝癌（優於一般腹部超音波）。加購LDCT後達 13/14。',
+    },
+    {
+      name: '台北榮總', fullName: '臺北榮民總醫院健康管理中心',
+      color: '#7c9ef8', recommended: false,
+      combo: '基礎週六＋頸動脈＋腦MRI＋心臟CT',
+      costM: '$81,040', costF: '$81,040',
+      cov: 11, tot: 14,
+      missing: ['眼底散瞳', '幽門桿菌', '胰島素'],
+      packages: [
+        { item: '基礎週六套組（含LDCT＋無痛胃腸鏡）',    m: '$33,000', f: '$33,000' },
+        { item: 'D-02 頸動脈超音波',                    m: '$1,040',  f: '$1,040' },
+        { item: 'B-04 腦血管磁振造影（MRI）',            m: '$22,000', f: '$22,000' },
+        { item: 'B-02 1152切面心臟血管CT',               m: '$25,000', f: '$25,000' },
+        { item: '合計', m: '$81,040', f: '$81,040', total: true },
+      ],
+      covered: ['腦MRI', '頸動脈', '1152切心臟CT', 'LDCT', '胃鏡', '大腸鏡', '腹部超音波', 'B/C肝', '乳房超音波（女）', '腫瘤標記', 'HbA1c'],
+      gaps: ['眼底散瞳 → 掛眼科（約 $500–1,000）', '幽門桿菌 → C13 吹氣試驗加項', '胰島素 → 單項抽血加驗（約 $200–500）'],
+      highlight: '北部首選。1152切心臟CT為高精度冠狀動脈掃描。',
+    },
+    {
+      name: '台大醫院', fullName: '臺大醫院健康管理中心',
+      color: '#9ab3fa', recommended: false,
+      combo: '基礎＋胃腸鏡＋心血管高階套裝',
+      costM: '$97,300', costF: '$99,300',
+      cov: 11, tot: 14,
+      missing: ['幽門桿菌', '乳房相關（女）', '胰島素'],
+      packages: [
+        { item: '男性基礎套裝（含LDCT＋腹部超音波＋眼科）', m: '$23,000', f: '$25,000' },
+        { item: '胃腸鏡套裝（無痛胃鏡＋大腸鏡）',          m: '$13,700', f: '$13,700' },
+        { item: '心血管高階套裝（腦MRA＋頸動脈＋冠狀動脈CT）', m: '$60,600', f: '$60,600' },
+        { item: '合計', m: '$97,300', f: '$99,300', total: true },
+      ],
+      covered: ['腦MRI(MRA)', '頸動脈', '心臟超音波＋冠狀動脈CT', 'LDCT', '眼底', '胃鏡', '大腸鏡', '腹部超音波', 'B/C肝', '腫瘤標記', 'HbA1c'],
+      gaps: ['幽門桿菌 → 胃鏡中加做 CLO test 或另約 C13', '乳房相關（女）→ 另行安排', '胰島素 → 單項加驗'],
+      highlight: '心血管高階套裝含腦MRA，為所有醫院中腦血管評估最精細。',
+    },
+    {
+      name: '台中榮總', fullName: '台中榮民總醫院健康管理中心',
+      color: '#80d4d4', recommended: false,
+      combo: '好胃腸保肝＋頸動脈＋心臟超音波＋腦MRA',
+      costM: '$70,325', costF: '$70,325',
+      cov: 11, tot: 14,
+      missing: ['眼底散瞳', '乳房相關', '胰島素'],
+      packages: [
+        { item: '好胃腸保肝套組（含LDCT＋無痛胃腸鏡＋肝臟MRI）', m: '$46,000', f: '$46,000' },
+        { item: '頸動脈超音波',      m: '$2,125',  f: '$2,125' },
+        { item: '心臟超音波',        m: '$4,200',  f: '$4,200' },
+        { item: '腦血管磁振造影（MRA）', m: '$18,000', f: '$18,000' },
+        { item: '合計', m: '$70,325', f: '$70,325', total: true },
+      ],
+      covered: ['腦MRA', '頸動脈', '心臟超音波', 'LDCT', '胃鏡', '大腸鏡', '腹部超音波＋肝臟MRI', '幽門桿菌', 'B/C肝', '腫瘤標記', 'HbA1c'],
+      gaps: ['眼底散瞳 → 掛眼科', '乳房超音波/攝影 → 加選 $735', '胰島素 → 可加選血液尊爵專案'],
+      highlight: '好胃腸保肝含肝臟MRI（精查早期肝癌），適合肝病高風險族群。中台灣首選。',
+    },
+    {
+      name: '林口長庚', fullName: '林口長庚紀念醫院健康管理中心',
+      color: '#f0c040', recommended: false,
+      combo: '護心保肺＋腦MRA＋幽門桿菌C13',
+      costM: '約 $20,860+', costF: '約 $20,860+',
+      cov: 10, tot: 14,
+      missing: ['眼底散瞳', '胃鏡/大腸鏡', '胰島素', '乳房攝影（女≥40）'],
+      packages: [
+        { item: '護心保肺康健套組（心臟超音波＋頸動脈＋LDCT＋腹部超音波＋B/C肝）', m: '$14,999', f: '$14,999' },
+        { item: '超高階腦磁振血管攝影（加選，起價）', m: '$4,560',  f: '$4,560' },
+        { item: '幽門桿菌 C13 吹氣試驗',             m: '$1,300',  f: '$1,300' },
+        { item: '合計（起價）', m: '約 $20,860', f: '約 $20,860', total: true },
+      ],
+      covered: ['腦MRA(加選)', '頸動脈', '心臟超音波', 'LDCT', '腹部超音波', '幽門桿菌(加選)', 'B/C肝', '乳房超音波（女）', '腫瘤標記', 'HbA1c'],
+      gaps: ['眼底散瞳 → 掛眼科', '胃鏡、大腸鏡 → 需另外安排', '胰島素 → 單項加驗', '乳房攝影（女 ≥ 40歲）→ 另行安排'],
+      highlight: '費用最平價，$14,999 即含心臟超音波＋頸動脈＋LDCT，預算有限的優質起點。胃腸鏡需另約，模組化彈性高。',
+    },
+    {
+      name: '高雄長庚', fullName: '高雄長庚紀念醫院健康管理中心',
+      color: '#f48ab0', recommended: false,
+      combo: '進階心血管型＋門診補項',
+      costM: '約 $63,000', costF: '—',
+      cov: 13, tot: 14,
+      missing: ['腦MRI（可再加）'],
+      packages: [
+        { item: '進階心血管型套組（頸動脈＋眼底＋心臟超音波＋640切CT＋無痛胃腸鏡＋腹部超音波＋腫瘤標記）', m: '$55,000', f: '—' },
+        { item: '門診：LDCT',              m: '約 $5,000–7,000', f: '—' },
+        { item: '門診：幽門桿菌 C13 吹氣', m: '約 $1,000–1,300', f: '—' },
+        { item: '門診：B/C 型肝炎血液',    m: '約 $300–500',     f: '—' },
+        { item: '門診：空腹胰島素',         m: '約 $200–500',     f: '—' },
+        { item: '合計估算', m: '約 $61.5–64.3K', f: '—', total: true },
+      ],
+      covered: ['頸動脈', '眼底鏡', '心臟超音波＋640切CT', '無痛胃鏡', '無痛大腸鏡', '腹部超音波', '腫瘤標記', 'HbA1c', 'LDCT(門診)', '幽門桿菌(門診)', 'B/C肝(門診)', '胰島素(門診)'],
+      gaps: ['腦部MRI → 可再加，費用約 $18,000–22,000'],
+      highlight: '640切冠狀動脈CT為資料中最高切數。進階心血管型以 $55,000 套組搭配門診補項，約 $63,000 達 13/14，相較菁英健檢省下約 $45,000。',
+      altPlan: { name: '方案B：男性菁英健檢', cost: '$107,500（男）/ $104,500（女）', color: '#f48ab0', note: '含全身正子CT(PET/CT)，加做幽門桿菌＋胰島素後可達 14/14。' },
+    },
+  ];
+
+  const BUDGET = [
+    { range: '< $25,000',       plan: '林口長庚 護心保肺（$14,999）＋腦MRA加選',        note: '心肺＋頸動脈基礎版；胃腸鏡需另約', best: false },
+    { range: '$40,000–50,000',  plan: '成大醫院 腸久愛肝＋LDCT加項 ⭐',               note: '涵蓋率最高（13/14），CP值最佳',     best: true  },
+    { range: '$60,000–70,000',  plan: '高雄長庚 進階心血管型＋門診補項',               note: '13/14；含640切CT＋眼底＋無痛胃腸鏡', best: false },
+    { range: '$70,000–80,000',  plan: '台中榮總 好胃腸保肝＋頸動脈＋心臟＋腦MRA',    note: '11/14；含肝臟MRI精查，適合中台灣', best: false },
+    { range: '$80,000–100,000', plan: '台北榮總 基礎週六＋影像全加',                   note: '11/14；北部首選，含1152切心臟CT',   best: false },
+    { range: '> $100,000',      plan: '高雄長庚 男性菁英健檢＋門診補幽門/胰島素',     note: '14/14；640切CT＋全身正子CT最完整', best: false },
+  ];
+
+  const REGIONS = [
+    { region: '台北／北部', hosp: '台北榮總 或 台大醫院', note: '心血管精查首選' },
+    { region: '台中',       hosp: '台中榮總',              note: '好胃腸保肝系列' },
+    { region: '台南',       hosp: '成大醫院',              note: '腸久愛肝（CP值最高）' },
+    { region: '高雄',       hosp: '高雄長庚',              note: '進階心血管型或菁英健檢' },
+  ];
+
+  const REMEDIES = [
+    { item: '幽門桿菌',           how: 'C13 吹氣試驗（最方便）或胃鏡同做 CLO test',    cost: '$1,000–1,300' },
+    { item: '胰島素 / HOMA-IR',   how: '門診或健檢中心抽血加項',                       cost: '$200–500' },
+    { item: '眼底散瞳',           how: '眼科門診掛診',                                 cost: '$500–1,000' },
+    { item: '乳房攝影（女 ≥40歲）', how: '放射科或健檢加項；國健署免費乳攝（≥ 45歲）', cost: '$0–1,500' },
+  ];
+
+  // ════════════════════════════════════════════════════════
+  // HELPERS
+  // ════════════════════════════════════════════════════════
+
+  function covClass(n, t) {
+    const p = n / t;
+    return p >= 0.9 ? 'cov-high' : p >= 0.75 ? 'cov-mid' : 'cov-low';
+  }
+
+  // ════════════════════════════════════════════════════════
+  // BUILD FUNCTIONS
+  // ════════════════════════════════════════════════════════
+
+  function buildSystems() {
+    const grid = document.getElementById('systemsGrid');
+    SYSTEMS.forEach(s => {
+      const d = document.createElement('div');
+      d.className = 'system-card' + (s.important ? ' important' : '');
+      d.innerHTML = `
+        <div class="system-card-header">
+          <span class="system-card-icon">${s.icon}</span>
+          <span class="system-card-title">${s.id}. ${s.title}</span>
+          ${s.important ? '<span class="system-tag">★ 必做</span>' : ''}
+        </div>
+        <div class="system-card-purpose">${s.purpose}</div>
+        <ul class="system-card-items">
+          ${s.items.map(i => `<li>${i}</li>`).join('')}
+        </ul>
+        <div class="system-card-normal">正常值：${s.normal}</div>`;
+      grid.appendChild(d);
+    });
+  }
+
+  function buildComparison() {
+    const tbl = document.getElementById('comparisonTable');
+    tbl.innerHTML = `
+      <thead>
+        <tr>
+          <th>醫院</th>
+          <th>最佳套組組合</th>
+          <th>費用（男）</th>
+          <th>費用（女）</th>
+          <th>涵蓋</th>
+          <th>仍缺</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${HOSPITALS.map(h => `
+          <tr class="${h.recommended ? 'rec' : ''}">
+            <td>${h.name}${h.recommended ? ' ⭐' : ''}</td>
+            <td>${h.combo}</td>
+            <td><span class="cost-main">${h.costM}</span></td>
+            <td><span class="${h.costF === '—' ? '' : 'cost-main'}">${h.costF}</span></td>
+            <td><span class="cov-badge ${covClass(h.cov, h.tot)}">${h.cov}/${h.tot}</span></td>
+            <td style="font-size:12px;">${h.missing.join('、')}</td>
+          </tr>`).join('')}
+      </tbody>`;
+  }
+
+  function buildHospitalCards() {
+    const container = document.getElementById('hospitalCards');
+    HOSPITALS.forEach(h => {
+      const card = document.createElement('div');
+      card.className = 'hosp-card';
+      card.innerHTML = `
+        <div class="hosp-header">
+          <div class="hosp-bar" style="background:${h.color};"></div>
+          <div>
+            <div class="hosp-name" style="color:${h.color};">${h.name}${h.recommended ? ' ⭐' : ''}</div>
+            <div class="hosp-sub">${h.fullName}</div>
+          </div>
+          <div class="hosp-right">
+            <span class="cov-badge ${covClass(h.cov, h.tot)}">${h.cov}/${h.tot}</span>
+            <span style="font-size:13px;font-weight:700;color:var(--text);">${h.costM}</span>
+            <span class="hosp-chevron">▶</span>
+          </div>
+        </div>
+        <div class="hosp-body">
+          <table class="pkg-table">
+            <thead><tr><th>項目</th><th>費用（男）</th><th>費用（女）</th></tr></thead>
+            <tbody>
+              ${h.packages.map(p => `
+                <tr class="${p.total ? 'pkg-total' : ''}">
+                  <td>${p.item}</td>
+                  <td>${p.m}</td>
+                  <td>${p.f || p.m}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+          <div class="chips-row">
+            <div class="chips-group">
+              <div class="chips-title ok">已涵蓋</div>
+              ${h.covered.map(c => `<span class="chip chip-ok">${c}</span>`).join('')}
+            </div>
+            <div class="chips-group">
+              <div class="chips-title miss">仍缺 / 補足方式</div>
+              ${h.missing.map(m => `<span class="chip chip-miss">${m}</span>`).join('')}
+              <ul class="gap-list">${h.gaps.map(g => `<li>${g}</li>`).join('')}</ul>
+            </div>
+          </div>
+          ${h.highlight ? `<div class="highlight-box">${h.highlight}</div>` : ''}
+          ${h.altPlan ? `
+            <div class="alt-plan-box" style="background:rgba(244,138,176,0.05);border-color:rgba(244,138,176,0.25);">
+              <strong style="color:${h.altPlan.color};">${h.altPlan.name}
+                <span style="font-weight:400;color:var(--text-dim);margin-left:8px;">${h.altPlan.cost}</span>
+              </strong>
+              <div style="color:var(--text-muted);">${h.altPlan.note}</div>
+            </div>` : ''}
+        </div>`;
+      card.querySelector('.hosp-header').addEventListener('click', () => card.classList.toggle('open'));
+      container.appendChild(card);
+    });
+  }
+
+  function buildBudget() {
+    const container = document.getElementById('budgetList');
+    BUDGET.forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'budget-row' + (t.best ? ' best' : '');
+      row.innerHTML = `
+        <div class="budget-range">${t.range}</div>
+        <div class="budget-plan">${t.plan}</div>
+        <div class="budget-note">${t.note}</div>`;
+      container.appendChild(row);
+    });
+  }
+
+  function buildRegions() {
+    const container = document.getElementById('regionGrid');
+    REGIONS.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'region-card';
+      card.innerHTML = `
+        <div class="region-name">${r.region}</div>
+        <div class="region-hosp">${r.hosp}</div>
+        <div class="region-note">${r.note}</div>`;
+      container.appendChild(card);
+    });
+  }
+
+  function buildRemedies() {
+    const container = document.getElementById('remedyGrid');
+    REMEDIES.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'remedy-card';
+      card.innerHTML = `
+        <div class="remedy-item">${r.item}</div>
+        <div class="remedy-how">${r.how}</div>
+        <div class="remedy-cost">${r.cost}</div>`;
+      container.appendChild(card);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    buildSystems();
+    buildComparison();
+    buildHospitalCards();
+    buildBudget();
+    buildRegions();
+    buildRemedies();
+  });
+  </script>
+</body>
+</html>

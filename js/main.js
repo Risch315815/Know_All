@@ -11,6 +11,13 @@ const DEFAULT_DOMAINS = [
     slug: 'Self-Paid Medical Tx_TW',
     updatedAt: Date.now(),
   },
+  {
+    name: '自費健檢',
+    desc: '根據醫師推薦，比較各大醫院健檢套組的涵蓋率與費用，找出最佳方案',
+    icon: '🩺',
+    slug: '自費健檢',
+    updatedAt: 1750291200000,
+  },
 ];
 
 // ── Storage ──────────────────────────────────────────────
@@ -22,6 +29,18 @@ function loadDomains() {
   } catch {
     return DEFAULT_DOMAINS;
   }
+}
+
+function ensureDefaultDomains() {
+  const domains = loadDomains();
+  let changed = false;
+  DEFAULT_DOMAINS.forEach(def => {
+    if (!domains.find(d => d.slug === def.slug)) {
+      domains.push(def);
+      changed = true;
+    }
+  });
+  if (changed) saveDomains(domains);
 }
 
 function saveDomains(domains) {
@@ -127,6 +146,7 @@ function escapeHtml(str) {
 // ── Init ──────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
+  ensureDefaultDomains();
   renderDomains();
 
   const addBtn   = document.getElementById('addDomainBtn');
