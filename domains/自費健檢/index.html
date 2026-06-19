@@ -364,6 +364,7 @@
   const HOSPITALS = [
     {
       name: '成大醫院', fullName: '成大醫院健康管理中心',
+      url: 'https://hmc.hosp.ncku.edu.tw/%E5%81%A5%E6%AA%A2%E5%A5%97%E8%A3%9D/%E5%A5%97%E8%A3%9D%E9%A0%90%E7%B4%84/',
       color: '#5cb85c', recommended: true,
       combo: '腸久愛肝＋LDCT加項＋眼底',
       costM: '約 $46,000', costF: '約 $49,500',
@@ -382,6 +383,7 @@
     },
     {
       name: '台北榮總', fullName: '臺北榮民總醫院健康管理中心',
+      url: 'https://phys.vghtpe.gov.tw/departments.php?lanauge=CH',
       color: '#7c9ef8', recommended: false,
       combo: '基礎週六＋頸動脈＋腦MRI＋心臟CT',
       costM: '$81,040', costF: '$81,040',
@@ -400,6 +402,7 @@
     },
     {
       name: '台大醫院', fullName: '臺大醫院健康管理中心',
+      url: 'https://hmc.ntuh.gov.tw/xcmenu?xsmsid=0M244857844766322333',
       color: '#9ab3fa', recommended: false,
       combo: '基礎＋胃腸鏡＋心血管高階套裝',
       costM: '$97,300', costF: '$99,300',
@@ -417,6 +420,7 @@
     },
     {
       name: '台中榮總', fullName: '台中榮民總醫院健康管理中心',
+      url: 'https://www.vghtc.gov.tw/CP/5229/2031',
       color: '#80d4d4', recommended: false,
       combo: '好胃腸保肝＋頸動脈＋心臟超音波＋腦MRA',
       costM: '$70,325', costF: '$70,325',
@@ -435,6 +439,7 @@
     },
     {
       name: '林口長庚', fullName: '林口長庚紀念醫院健康管理中心',
+      url: 'https://cghdpt.cgmh.org.tw/dept/hmclnk/m/10408/news/35858',
       color: '#f0c040', recommended: false,
       combo: '護心保肺＋腦MRA＋幽門桿菌C13',
       costM: '約 $20,860+', costF: '約 $20,860+',
@@ -452,6 +457,7 @@
     },
     {
       name: '高雄長庚', fullName: '高雄長庚紀念醫院健康管理中心',
+      url: 'https://www1.cgmh.org.tw/intr/intr4/c8190/',
       color: '#f48ab0', recommended: false,
       combo: '進階心血管型＋門診補項',
       costM: '約 $63,000', costF: '—',
@@ -544,7 +550,7 @@
       <tbody>
         ${HOSPITALS.map(h => `
           <tr class="${h.recommended ? 'rec' : ''}">
-            <td>${h.name}${h.recommended ? ' ⭐' : ''}</td>
+            <td><a href="${h.url}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px;">${h.name}</a>${h.recommended ? ' ⭐' : ''}</td>
             <td>${h.combo}</td>
             <td><span class="cost-main">${h.costM}</span></td>
             <td><span class="${h.costF === '—' ? '' : 'cost-main'}">${h.costF}</span></td>
@@ -563,8 +569,10 @@
         <div class="hosp-header">
           <div class="hosp-bar" style="background:${h.color};"></div>
           <div>
-            <div class="hosp-name" style="color:${h.color};">${h.name}${h.recommended ? ' ⭐' : ''}</div>
-            <div class="hosp-sub">${h.fullName}</div>
+            <div class="hosp-name" style="color:${h.color};">
+              <a href="${h.url}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px;">${h.name}</a>${h.recommended ? ' ⭐' : ''}
+            </div>
+            <div class="hosp-sub"><a href="${h.url}" target="_blank" rel="noopener" style="color:var(--text-dim);">${h.fullName} ↗</a></div>
           </div>
           <div class="hosp-right">
             <span class="cov-badge ${covClass(h.cov, h.tot)}">${h.cov}/${h.tot}</span>
