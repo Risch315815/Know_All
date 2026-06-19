@@ -309,31 +309,31 @@
       id: 1, icon: '🧠', title: '腦', important: false,
       purpose: '早期發現血管問題，預防腦中風',
       items: ['腦部 MRI（含 TOF 血管評估）', '頸動脈超音波'],
-      normal: 'MRI 無狹窄/動脈瘤；頸動脈 IMT < 0.9 mm',
+      normal: 'MRI 無狹窄/動脈瘤<br/>頸動脈 IMT < 0.9 mm',
     },
     {
       id: 2, icon: '👁', title: '眼', important: false,
       purpose: '眼病變、青光眼篩檢',
       items: ['眼底檢查（散瞳）'],
-      normal: '杯盤比 C/D < 0.5；眼壓 10–21 mmHg',
+      normal: '杯盤比 C/D < 0.5<br/>眼壓 10–21 mmHg',
     },
     {
       id: 3, icon: '❤️', title: '心', important: false,
       purpose: '預防心肌梗塞',
       items: ['心臟超音波', '冠狀動脈 CT（512切以上）'],
-      normal: 'EF ≥ 55%；CAC Score = 0 最佳',
+      normal: 'EF ≥ 55%<br/>CAC Score = 0 最佳',
     },
     {
       id: 4, icon: '🫁', title: '肺', important: false,
       purpose: '肺癌篩檢',
       items: ['低劑量電腦斷層（LDCT）'],
-      normal: '無結節；< 6 mm 低風險（Lung-RADS 2）',
+      normal: '無結節<br/>< 6 mm 低風險（Lung-RADS 2）',
     },
     {
       id: 5, icon: '🫃', title: '肝膽腸胃', important: true,
       purpose: '胃腸癌、肝癌篩檢',
       items: ['胃鏡', '大腸鏡', '腹部超音波', '幽門桿菌（三擇一）', 'B/C 肝血液'],
-      normal: '幽門桿菌陰性；B肝抗體陽性；C肝抗體陰性',
+      normal: '幽門桿菌陰性<br/>B肝抗體陽性<br/>C肝抗體陰性',
     },
     {
       id: 6, icon: '🔬', title: '乳房', important: false,
@@ -345,13 +345,13 @@
       id: 7, icon: '🩸', title: '血液', important: false,
       purpose: '基礎＋腫瘤標記',
       items: ['CBC、血脂、肝腎功能', 'AFP、CA19-9、CEA', 'PSA（男）/ CA125、CA15-3（女）'],
-      normal: 'PSA < 4.0 ng/mL；各標記依正常範圍',
+      normal: 'PSA < 4.0 ng/mL<br/>各標記依正常範圍',
     },
     {
       id: 8, icon: '⚡', title: '代謝', important: false,
       purpose: '糖尿病前期、胰島素阻抗',
       items: ['HbA1c', '空腹胰島素（HOMA-IR）'],
-      normal: 'HbA1c < 5.7%；HOMA-IR < 1.9',
+      normal: 'HbA1c < 5.7%<br/>HOMA-IR < 1.9',
     },
   ];
 
@@ -654,8 +654,6 @@
     buildSystems();
     buildComparison();
     buildHospitalCards();
-    buildBudget();
-    buildRegions();
     buildRemedies();
   });
   </script>
