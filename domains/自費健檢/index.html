@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
@@ -9,11 +9,11 @@
     .hc-page { max-width: 1000px; margin: 0 auto; padding: 0 24px 80px; }
 
     .section-label {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      font-size: 14px; font-weight: 700; letter-spacing: 0.12em;
       text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
     }
     .section-block { margin-bottom: 56px; }
-    .section-block h2 { font-size: 20px; font-weight: 600; margin-bottom: 18px; }
+    .section-block h2 { font-size: 26px; font-weight: 600; margin-bottom: 18px; }
 
     /* Stats bar */
     .stats-bar {
@@ -26,8 +26,8 @@
       border-right: 1px solid var(--border);
     }
     .stat-item:last-child { border-right: none; }
-    .stat-num { font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1; }
-    .stat-label { font-size: 12px; color: #ffffff; margin-top: 4px; }
+    .stat-num { font-size: 36px; font-weight: 700; color: var(--accent); line-height: 1; }
+    .stat-label { font-size: 16px; color: #ffffff; margin-top: 4px; }
 
     /* System cards */
     .systems-grid {
@@ -42,22 +42,22 @@
     }
     .system-card.important { border-left-color: #5cb85c; }
     .system-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-    .system-card-icon { font-size: 18px; }
-    .system-card-title { font-size: 14px; font-weight: 600; }
+    .system-card-icon { font-size: 23px; }
+    .system-card-title { font-size: 18px; font-weight: 600; }
     .system-tag {
-      display: inline-block; font-size: 10px; padding: 2px 7px;
+      display: inline-block; font-size: 13px; padding: 2px 7px;
       background: rgba(92,184,92,0.15); border-radius: 10px; color: #5cb85c; margin-left: 4px;
     }
-    .system-card-purpose { font-size: 12px; color: #ffffff; margin-bottom: 8px; }
+    .system-card-purpose { font-size: 16px; color: #ffffff; margin-bottom: 8px; }
     .system-card-items { list-style: none; padding: 0; margin: 0; }
-    .system-card-items li { font-size: 12px; color: #ffffff; padding: 2px 0; }
+    .system-card-items li { font-size: 16px; color: #ffffff; padding: 2px 0; }
     .system-card-items li::before { content: '— '; }
-    .system-card-normal { margin-top: 8px; font-size: 11px; color: #ffffff; padding-top: 8px; border-top: 1px solid var(--border); }
+    .system-card-normal { margin-top: 8px; font-size: 14px; color: #ffffff; padding-top: 8px; border-top: 1px solid var(--border); }
 
     /* Coverage badge */
     .cov-badge {
       display: inline-flex; align-items: center;
-      font-size: 12px; font-weight: 700;
+      font-size: 16px; font-weight: 700;
       padding: 3px 10px; border-radius: 20px;
     }
     .cov-high   { background: rgba(92,184,92,0.15);  color: #5cb85c; }
@@ -65,9 +65,9 @@
     .cov-low    { background: rgba(240,192,64,0.15);  color: #f0c040; }
 
     /* Comparison table */
-    .hc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .hc-table { width: 100%; border-collapse: collapse; font-size: 17px; }
     .hc-table th {
-      padding: 10px 14px; text-align: left; font-size: 11px;
+      padding: 10px 14px; text-align: left; font-size: 14px;
       font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
       color: #ffffff; border-bottom: 1px solid var(--border);
     }
@@ -93,10 +93,10 @@
     }
     .hosp-header:hover { background: rgba(255,255,255,0.025); }
     .hosp-bar { width: 4px; align-self: stretch; border-radius: 2px; flex-shrink: 0; }
-    .hosp-name { font-size: 15px; font-weight: 600; }
-    .hosp-sub  { font-size: 11px; color: #ffffff; margin-top: 2px; }
+    .hosp-name { font-size: 20px; font-weight: 600; }
+    .hosp-sub  { font-size: 14px; color: #ffffff; margin-top: 2px; }
     .hosp-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
-    .hosp-chevron { color: #ffffff; font-size: 13px; transition: transform 0.2s; flex-shrink: 0; }
+    .hosp-chevron { color: #ffffff; font-size: 17px; transition: transform 0.2s; flex-shrink: 0; }
     .hosp-card.open .hosp-chevron { transform: rotate(90deg); }
     .hosp-body {
       display: none; padding: 0 20px 20px 38px;
@@ -105,9 +105,9 @@
     .hosp-card.open .hosp-body { display: block; }
 
     /* Package table */
-    .pkg-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 16px; }
+    .pkg-table { width: 100%; border-collapse: collapse; font-size: 16px; margin-top: 16px; }
     .pkg-table th {
-      padding: 7px 12px; text-align: left; font-size: 11px;
+      padding: 7px 12px; text-align: left; font-size: 14px;
       color: #ffffff; border-bottom: 1px solid var(--border);
     }
     .pkg-table td {
@@ -120,28 +120,28 @@
     .chips-row { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 14px; }
     .chips-group { flex: 1; min-width: 180px; }
     .chips-title {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+      font-size: 13px; font-weight: 700; letter-spacing: 0.07em;
       text-transform: uppercase; margin-bottom: 7px;
     }
     .chips-title.ok   { color: #5cb85c; }
     .chips-title.miss { color: #f0a040; }
     .chip {
-      display: inline-block; font-size: 11px; padding: 2px 8px;
+      display: inline-block; font-size: 14px; padding: 2px 8px;
       border-radius: 10px; margin: 2px 3px;
     }
     .chip-ok   { background: rgba(92,184,92,0.12);  color: #5cb85c; }
     .chip-miss { background: rgba(240,160,64,0.12); color: #f0a040; }
     .gap-list { list-style: none; padding: 0; margin-top: 8px; }
-    .gap-list li { font-size: 12px; color: #ffffff; padding: 2px 0; }
+    .gap-list li { font-size: 16px; color: #ffffff; padding: 2px 0; }
     .gap-list li::before { content: '→ '; color: var(--accent); }
     .highlight-box {
       margin-top: 14px; padding: 10px 14px;
       background: rgba(255,255,255,0.025); border-radius: 8px;
-      font-size: 12px; color: #ffffff; line-height: 1.7;
+      font-size: 16px; color: #ffffff; line-height: 1.7;
     }
     .alt-plan-box {
       margin-top: 10px; padding: 12px 14px;
-      border-radius: 8px; border: 1px solid; font-size: 12px;
+      border-radius: 8px; border: 1px solid; font-size: 16px;
     }
     .alt-plan-box strong { display: block; margin-bottom: 4px; }
 
@@ -159,11 +159,11 @@
       background: rgba(92,184,92,0.04);
     }
     .budget-range {
-      font-size: 12px; font-weight: 700; color: var(--accent);
+      font-size: 16px; font-weight: 700; color: var(--accent);
       min-width: 140px; flex-shrink: 0;
     }
-    .budget-plan { font-size: 13px; color: var(--text); flex: 1; }
-    .budget-note { font-size: 12px; color: #ffffff; }
+    .budget-plan { font-size: 17px; color: var(--text); flex: 1; }
+    .budget-note { font-size: 16px; color: #ffffff; }
 
     /* Region cards */
     .region-grid {
@@ -175,9 +175,9 @@
       background: var(--bg-card); border: 1px solid var(--border);
       border-radius: var(--radius-sm); padding: 14px 16px;
     }
-    .region-name  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #ffffff; margin-bottom: 5px; }
-    .region-hosp  { font-size: 14px; font-weight: 600; color: var(--text); }
-    .region-note  { font-size: 12px; color: #ffffff; margin-top: 4px; }
+    .region-name  { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #ffffff; margin-bottom: 5px; }
+    .region-hosp  { font-size: 18px; font-weight: 600; color: var(--text); }
+    .region-note  { font-size: 16px; color: #ffffff; margin-top: 4px; }
 
     /* Remedy cards */
     .remedy-grid {
@@ -189,15 +189,15 @@
       background: var(--bg-card); border: 1px solid var(--border);
       border-radius: var(--radius-sm); padding: 14px 16px;
     }
-    .remedy-item { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
-    .remedy-how  { font-size: 12px; color: #ffffff; margin-bottom: 6px; line-height: 1.6; }
-    .remedy-cost { font-size: 12px; font-weight: 700; color: var(--accent); }
+    .remedy-item { font-size: 18px; font-weight: 600; margin-bottom: 5px; }
+    .remedy-how  { font-size: 16px; color: #ffffff; margin-bottom: 6px; line-height: 1.6; }
+    .remedy-cost { font-size: 16px; font-weight: 700; color: var(--accent); }
 
     /* Info note */
     .info-note {
       background: rgba(124,158,248,0.06); border: 1px solid var(--accent-dim);
       border-radius: var(--radius-sm); padding: 12px 16px;
-      font-size: 13px; color: #ffffff; margin-bottom: 20px; line-height: 1.7;
+      font-size: 17px; color: #ffffff; margin-bottom: 20px; line-height: 1.7;
     }
     .info-note strong { color: var(--accent); }
 
@@ -296,7 +296,7 @@
 
   <footer class="site-footer">
     <p>全知專案 · <a href="https://github.com/Risch315815/Know_All" target="_blank">GitHub</a></p>
-    <p style="margin-top:6px;font-size:12px;color:#ffffff;">費用以各醫院文件標示為準，實際以現場確認為主 · 整理日期：2026-06-19</p>
+    <p style="margin-top:6px;font-size: 16px;color:#ffffff;">費用以各醫院文件標示為準，實際以現場確認為主 · 整理日期：2026-06-19</p>
   </footer>
 
   <script>
@@ -549,7 +549,7 @@
             <td><span class="cost-main">${h.costM}</span></td>
             <td><span class="${h.costF === '—' ? '' : 'cost-main'}">${h.costF}</span></td>
             <td><span class="cov-badge ${covClass(h.cov, h.tot)}">${h.cov}/${h.tot}</span></td>
-            <td style="font-size:12px;">${h.missing.join('、')}</td>
+            <td style="font-size: 16px;">${h.missing.join('、')}</td>
           </tr>`).join('')}
       </tbody>`;
   }
@@ -570,7 +570,7 @@
           </div>
           <div class="hosp-right">
             <span class="cov-badge ${covClass(h.cov, h.tot)}">${h.cov}/${h.tot}</span>
-            <span style="font-size:13px;font-weight:700;color:var(--text);">${h.costM}</span>
+            <span style="font-size: 17px;font-weight:700;color:var(--text);">${h.costM}</span>
             <span class="hosp-chevron">▶</span>
           </div>
         </div>
